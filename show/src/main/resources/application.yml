@@ -21,6 +21,12 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.gqb.show.entity  #所有Entity别名类所在包
 
+pagehelper:
+  reasonable: true
+  params: count=countSql
+  helper-dialect: mysql
+  support-methods-arguments: true
+
 management:
   endpoints:
     web:

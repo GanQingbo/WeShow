@@ -20,7 +20,7 @@
 
 
     <select id="getAllShows" resultMap="BaseResultMap">
-        select * from show_list;
+        select * from show_list
     </select>
 
     <select id="getShowByTime" resultMap="BaseResultMap">
@@ -50,9 +50,15 @@
 
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createShow" parameterType="com.gqb.show.entity.Show" useGeneratedKeys="true" keyProperty="id">
-        insert into show(showtype_id,show_name,show_intro,show_performer,show_city,show_place,show_time,show_poster,show_mobile)
-            values(#{showTypeId},#{showName},#{showIntro},#{showPerformer},#{showCity},#{showPlace},#{showTime},#{showPoster},#{showMobile});
+        insert into show_list(showtype_id,show_name,show_intro,show_performer,show_city,show_place,show_time,end_time,show_poster,show_mobile)
+            values(#{showTypeId},#{showName},#{showIntro},#{showPerformer},#{showCity},#{showPlace},#{showTime},#{endTime},#{showPoster},#{showMobile});
     </insert>
 
+    <delete id="deleteShowById" parameterType="Long">
+        delete from show_list where id =#{id};
+    </delete>
 
+    <delete id="deleteShowByName" parameterType="String">
+        delete from show_list where show_name=#{showName};
+    </delete>
 </mapper>

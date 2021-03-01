@@ -1,12 +1,10 @@
 package com.gqb.show.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.gqb.common.utils.R;
 import com.gqb.show.entity.Show;
 import com.gqb.show.service.ShowService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -27,6 +25,12 @@ public class ShowController {
     public R getAllShow(){
         List<Show> shows = showService.getAllShow();
         return R.ok().setData(shows);
+    }
+
+    @GetMapping("/getShowByPage/{page}/{size}")
+    public R getShowByPage(@PathVariable("page") Integer page,@PathVariable("size") Integer size){
+        PageInfo<Show> showByPage = showService.getShowByPage(page, size);
+        return R.ok().setData(showByPage);
     }
 
     @GetMapping("/getShowByTime")
@@ -81,5 +85,32 @@ public class ShowController {
             return R.ok().setData(showByName);
         }
         return R.error("无查询结果");
+    }
+
+    @PostMapping("/createShow")
+    public R createShow(@RequestBody Show show){
+        int i = showService.createShow(show);
+        if(i>0){
+            return R.ok().put("id",show.getId());
+        }
+        return R.error(444,"创建Show失败");
+    }
+
+    @DeleteMapping("/deleteShowById/{id}")
+    public R deleteById(@PathVariable Long id){
+        int i = showService.deleteShowById(id);
+        if(i>0){
+            return R.ok();
+        }
+        return R.error("删除show失败");
+    }
+
+    @DeleteMapping("/deleteShowByName/{name}")
+    public R deleteByName(@PathVariable String name){
+        int i = showService.deleteShowByName(name);
+        if(i>0){
+            return R.ok();
+        }
+        return R.error("删除show失败");
     }
 }

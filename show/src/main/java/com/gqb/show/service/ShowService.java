@@ -1,5 +1,6 @@
 package com.gqb.show.service;
 
+import com.github.pagehelper.PageInfo;
 import com.gqb.show.entity.Show;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,4 +23,5 @@ public interface ShowService {
     int createShow(Show show);
     int deleteShowById(Long id);
     int deleteShowByName(String showName);
+    PageInfo<Show> getShowByPage(int page, int size);
 }

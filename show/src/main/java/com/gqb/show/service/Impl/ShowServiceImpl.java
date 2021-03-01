@@ -1,5 +1,7 @@
 package com.gqb.show.service.Impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.gqb.show.dao.ShowDao;
 import com.gqb.show.entity.Show;
 import com.gqb.show.service.ShowService;
@@ -19,6 +21,11 @@ public class ShowServiceImpl implements ShowService {
     @Resource
     private ShowDao showDao;
 
+    /***
+    *@Description 获取全部表演信息
+    *@param
+    *@return
+    */
     @Override
     public List<Show> getAllShow() {
         List<Show> shows = showDao.getAllShows();
@@ -26,6 +33,22 @@ public class ShowServiceImpl implements ShowService {
             System.out.println(show.getShowTime());
         }
         return shows;
+    }
+
+    /***
+    *@Description 分页查询
+    *@param page,size
+    *@return
+    */
+    public PageInfo<Show> getShowByPage(int page,int size){
+        System.out.println("page:"+page+"size:"+size);
+        //开启分页插件page helper
+        PageHelper.startPage(page,size);
+        List<Show> shows = showDao.getAllShows();
+        //封装到PageInfo
+        PageInfo<Show> pageInfo=new PageInfo<>(shows);
+        System.out.println("page:"+pageInfo.getPageNum()+"size:"+pageInfo.getPageSize());
+        return pageInfo;
     }
 
     /***
@@ -71,16 +94,19 @@ public class ShowServiceImpl implements ShowService {
 
     @Override
     public int createShow(Show show) {
-        return 0;
+        if(show!=null){
+            return showDao.createShow(show);
+        }
+       return 0;
     }
 
     @Override
     public int deleteShowById(Long id) {
-        return 0;
+        return showDao.deleteShowById(id);
     }
 
     @Override
     public int deleteShowByName(String showName) {
-        return 0;
+        return showDao.deleteShowByName(showName);
     }
 }
