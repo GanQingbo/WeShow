@@ -18,7 +18,7 @@ public interface ShowService {
     List<Show> getShowByPerformer(String showPerformer);
     List<Show> getShowByType(String showType);
     Show getShowById(Long id);
-    Show getShowByName(String showName);
+    List<Show> getShowByName(String showName);
     int createShow(Show show);
     int deleteShowById(Long id);
     int deleteShowByName(String showName);

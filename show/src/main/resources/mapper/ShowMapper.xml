@@ -31,20 +31,21 @@
         select * from show_list where show_city like "%"#{showCity}"%";
     </select>
 
-    <select id="getShowByPerformer" resultMap="BaseResultMap">
-        select * from show;
+    <select id="getShowByPerformer" parameterType="String" resultMap="BaseResultMap">
+        select * from show_list where show_performer like "%"#{showPerformer}"%";
     </select>
 
-    <select id="getShowByType" resultMap="BaseResultMap">
-        select * from show;
+    <select id="getShowByType" parameterType="String" resultMap="BaseResultMap">
+        select show_list.id,show_type,show_name,show_performer,show_city,show_place,show_time,end_time,show_poster,show_mobile,create_time
+        from show_list join showtype where show_list.showtype_id=showtype.id and showtype.show_type like "%"#{showType}"%"
     </select>
 
-    <select id="getshowById" resultMap="BaseResultMap">
-        select * from show;
+    <select id="getShowById" parameterType="Long" resultMap="BaseResultMap">
+        select * from show_list where id=#{id};
     </select>
 
-    <select id="getShowByName" resultMap="BaseResultMap">
-        select * from show;
+    <select id="getShowByName" parameterType="String" resultMap="BaseResultMap">
+        select * from show_list where show_name like "%"#{showName}"%";
     </select>
 
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->

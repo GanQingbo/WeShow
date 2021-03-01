@@ -47,22 +47,26 @@ public class ShowServiceImpl implements ShowService {
 
     @Override
     public List<Show> getShowByPerformer(String showPerformer) {
-        return null;
+        List<Show> showByPerformer = showDao.getShowByPerformer(showPerformer);
+        return showByPerformer;
     }
 
     @Override
     public List<Show> getShowByType(String showType) {
-        return null;
+        List<Show> showByType = showDao.getShowByType(showType);
+        return showByType;
     }
 
     @Override
     public Show getShowById(Long id) {
-        return null;
+        Show showById = showDao.getShowById(id);
+        return showById;
     }
 
     @Override
-    public Show getShowByName(String showName) {
-        return null;
+    public List<Show> getShowByName(String showName) {
+        List<Show> showByName = showDao.getShowByName(showName);
+        return showByName;
     }
 
     @Override

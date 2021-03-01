@@ -32,7 +32,7 @@ public class ShowController {
     @GetMapping("/getShowByTime")
     public R getShowByTime(){
         List<Show> shows=showService.getShowByTime();
-        if (shows!=null){
+        if (shows!=null&&!shows.isEmpty()){
             return R.ok().setData(shows);
         }
         return R.error("无查询结果");
@@ -41,8 +41,44 @@ public class ShowController {
     @GetMapping("/getShowByCity/{showCity}")
     public R getShowByCity(@PathVariable String showCity){
         List<Show> lists = showService.getShowByCity(showCity);
-        if(lists!=null){
+        if(lists!=null&&!lists.isEmpty()){
             return R.ok().setData(lists);
+        }
+        return R.error("无查询结果");
+    }
+
+    @GetMapping("/getShowByPerformer/{showPerformer}")
+    public R getShowByPerformer(@PathVariable String showPerformer){
+        List<Show> showByPerformer = showService.getShowByPerformer(showPerformer);
+        if(showByPerformer!=null&&!showByPerformer.isEmpty()){
+            return R.ok().setData(showByPerformer);
+        }
+        return R.error("无查询结果");
+    }
+
+    @GetMapping("/getShowByType/{showType}")
+    public R getShowByType(@PathVariable String showType){
+        List<Show> showByType = showService.getShowByType(showType);
+        if(showByType!=null&&!showByType.isEmpty()){
+            return R.ok().setData(showByType);
+        }
+        return R.error("无查询结果");
+    }
+
+    @GetMapping("/getShowById/{id}")
+    public R getShowById(@PathVariable Long id){
+        Show showById = showService.getShowById(id);
+        if(showById!=null){
+            return R.ok().setData(showById);
+        }
+        return R.error("无查询结果");
+    }
+
+    @GetMapping("/getShowByName/{showName}")
+    public R getShowByName(@PathVariable String showName){
+        List<Show> showByName = showService.getShowByName(showName);
+        if(showByName!=null &&!showByName.isEmpty()){
+            return R.ok().setData(showByName);
         }
         return R.error("无查询结果");
     }
