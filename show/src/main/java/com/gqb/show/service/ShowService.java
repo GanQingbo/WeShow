@@ -23,5 +23,7 @@ public interface ShowService {
     int createShow(Show show);
     int deleteShowById(Long id);
     int deleteShowByName(String showName);
+    int updateShow(Show show);
     PageInfo<Show> getShowByPage(int page, int size);
+    PageInfo<Show> getShowByPageAndTime(int page,int size);
 }

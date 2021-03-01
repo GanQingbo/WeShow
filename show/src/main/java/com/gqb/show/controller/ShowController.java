@@ -42,6 +42,12 @@ public class ShowController {
         return R.error("无查询结果");
     }
 
+    @GetMapping("/getShowByPageAndTime/{page}/{size}")
+    public R getShowByPageAndTime(@PathVariable("page") Integer page,@PathVariable("size") Integer size){
+        PageInfo<Show> shows = showService.getShowByPageAndTime(page, size);
+        return R.ok().setData(shows);
+    }
+
     @GetMapping("/getShowByCity/{showCity}")
     public R getShowByCity(@PathVariable String showCity){
         List<Show> lists = showService.getShowByCity(showCity);
@@ -112,5 +118,14 @@ public class ShowController {
             return R.ok();
         }
         return R.error("删除show失败");
+    }
+
+    @PostMapping("/updateShow")
+    public R updateShow(@RequestBody Show show){
+        int i = showService.updateShow(show);
+        if(i>0){
+            return R.ok();
+        }
+        return R.error("更新show失败");
     }
 }

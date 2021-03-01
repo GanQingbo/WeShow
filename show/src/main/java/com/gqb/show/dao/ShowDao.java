@@ -24,4 +24,5 @@ public interface ShowDao {
     int createShow(Show show);
     int deleteShowById(@Param("id") Long id);
     int deleteShowByName(@Param("showName") String showName);
+    int updateShow(Show show);
 }

@@ -24,7 +24,7 @@
     </select>
 
     <select id="getShowByTime" resultMap="BaseResultMap">
-        select * from show_list where show_time > now();
+        select * from show_list where show_time > now()
     </select>
 
     <select id="getShowByCity" parameterType="String" resultMap="BaseResultMap">
@@ -61,4 +61,39 @@
     <delete id="deleteShowByName" parameterType="String">
         delete from show_list where show_name=#{showName};
     </delete>
+
+    <update id="updateShow" parameterType="com.gqb.show.entity.Show">
+        update show_list
+        <set>
+            <if test="showName!=null">
+                show_name=#{showName},
+            </if>
+            <if test="showIntro!=null">
+                show_intro=#{showIntro},
+            </if>
+            <if test="showPerformer!=null">
+                show_performer=#{showPerformer},
+            </if>
+            <if test="showCity!=null">
+                show_city=#{showCity},
+            </if>
+            <if test="showPlace!=null">
+                show_place=#{showPlace},
+            </if>
+            <if test="showTime!=null">
+                show_time=#{showTime},
+            </if>
+            <if test="endTime!=null">
+                end_time=#{endTime},
+            </if>
+            <if test="showPoster!=null">
+                show_poster=#{showPoster},
+            </if>
+            <if test="showMobile!=null">
+                show_mobile=#{showMobile},
+            </if>
+        </set>
+        where id=#{id};
+    </update>
+
 </mapper>

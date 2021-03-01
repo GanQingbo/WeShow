@@ -41,13 +41,11 @@ public class ShowServiceImpl implements ShowService {
     *@return
     */
     public PageInfo<Show> getShowByPage(int page,int size){
-        System.out.println("page:"+page+"size:"+size);
         //开启分页插件page helper
         PageHelper.startPage(page,size);
         List<Show> shows = showDao.getAllShows();
         //封装到PageInfo
         PageInfo<Show> pageInfo=new PageInfo<>(shows);
-        System.out.println("page:"+pageInfo.getPageNum()+"size:"+pageInfo.getPageSize());
         return pageInfo;
     }
 
@@ -60,6 +58,19 @@ public class ShowServiceImpl implements ShowService {
     public List<Show> getShowByTime() {
         List<Show> shows = showDao.getShowByTime();
         return shows;
+    }
+
+    /***
+    *@Description 分页获取未开始的表演
+    *@param
+    *@return
+    */
+    @Override
+    public PageInfo<Show> getShowByPageAndTime(int page,int size){
+        PageHelper.startPage(page,size);
+        List<Show> shows = showDao.getShowByTime();
+        PageInfo<Show> pageInfo=new PageInfo<>(shows);
+        return pageInfo;
     }
 
     @Override
@@ -108,5 +119,10 @@ public class ShowServiceImpl implements ShowService {
     @Override
     public int deleteShowByName(String showName) {
         return showDao.deleteShowByName(showName);
+    }
+
+    @Override
+    public int updateShow(Show show) {
+        return showDao.updateShow(show);
     }
 }
