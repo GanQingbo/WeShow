@@ -1,7 +1,5 @@
 package controller;
 
-import com.gqb.common.utils.R;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**

@@ -1,6 +1,6 @@
 package com.gqb.show.controller;
 
-import com.gqb.common.utils.R;
+import com.gqb.common.utils.R0;
 import com.gqb.show.entity.ShowType;
 import com.gqb.show.service.ShowTypeService;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +21,9 @@ public class ShowTypeController {
     private ShowTypeService showTypeService;
 
     @GetMapping("/getAllShowType")
-    public R getAllShowType(){
+    public R0 getAllShowType(){
         List<ShowType> list = showTypeService.selectAllShowType();
-        return R.ok().put("showtype",list);
+        return R0.ok().put("showtype",list);
     }
 
     /***
@@ -32,11 +32,11 @@ public class ShowTypeController {
     *@return 新插入记录的id
     */
     @PostMapping("/createShowType")
-    public R createShowType(@RequestBody ShowType showType){
+    public R0 createShowType(@RequestBody ShowType showType){
         int showTypeId = showTypeService.createShowType(showType);
         if(showTypeId>0){
-            return R.ok().put("id",showType.getId());
+            return R0.ok().put("id",showType.getId());
         }
-        return R.error(444,"插入异常");
+        return R0.error(444,"插入异常");
     }
 }

@@ -24,91 +24,91 @@ public class ShowController {
     @GetMapping("/getAllShow")
     public R getAllShow(){
         List<Show> shows = showService.getAllShow();
-        return R.ok().setData(shows);
+        return R.ok().data("show",shows);
     }
 
     @GetMapping("/getShowByPage/{page}/{size}")
-    public R getShowByPage(@PathVariable("page") Integer page,@PathVariable("size") Integer size){
+    public R getShowByPage(@PathVariable("page") Integer page, @PathVariable("size") Integer size){
         PageInfo<Show> showByPage = showService.getShowByPage(page, size);
-        return R.ok().setData(showByPage);
+        return R.ok().data("show",showByPage);
     }
 
     @GetMapping("/getShowByTime")
     public R getShowByTime(){
         List<Show> shows=showService.getShowByTime();
         if (shows!=null&&!shows.isEmpty()){
-            return R.ok().setData(shows);
+            return R.ok().data("show",shows);
         }
-        return R.error("无查询结果");
+        return R.error().code(405).message("查询无结果");
     }
 
     @GetMapping("/getShowByPageAndTime/{page}/{size}")
-    public R getShowByPageAndTime(@PathVariable("page") Integer page,@PathVariable("size") Integer size){
+    public R getShowByPageAndTime(@PathVariable("page") Integer page, @PathVariable("size") Integer size){
         PageInfo<Show> shows = showService.getShowByPageAndTime(page, size);
-        return R.ok().setData(shows);
+        return R.ok().data("show",shows);
     }
 
     @GetMapping("/getShowByCity/{showCity}")
     public R getShowByCity(@PathVariable String showCity){
         List<Show> lists = showService.getShowByCity(showCity);
         if(lists!=null&&!lists.isEmpty()){
-            return R.ok().setData(lists);
+            return R.ok().data("show",lists);
         }
-        return R.error("无查询结果");
+        return R.error().message("查询无结果");
     }
 
     @GetMapping("/getShowByPerformer/{showPerformer}")
     public R getShowByPerformer(@PathVariable String showPerformer){
         List<Show> showByPerformer = showService.getShowByPerformer(showPerformer);
         if(showByPerformer!=null&&!showByPerformer.isEmpty()){
-            return R.ok().setData(showByPerformer);
+            return R.ok().data("show",showByPerformer);
         }
-        return R.error("无查询结果");
+        return R.error().message("查询无结果");
     }
 
     @GetMapping("/getShowByType/{showType}")
     public R getShowByType(@PathVariable String showType){
         List<Show> showByType = showService.getShowByType(showType);
         if(showByType!=null&&!showByType.isEmpty()){
-            return R.ok().setData(showByType);
+            return R.ok().data("show",showByType);
         }
-        return R.error("无查询结果");
+        return R.error().message("查询无结果");
     }
 
     @GetMapping("/getShowById/{id}")
     public R getShowById(@PathVariable Long id){
         Show showById = showService.getShowById(id);
         if(showById!=null){
-            return R.ok().setData(showById);
+            return R.ok().data("show",showById);
         }
-        return R.error("无查询结果");
+        return R.error().message("查询无结果");
     }
 
     @GetMapping("/getShowByName/{showName}")
     public R getShowByName(@PathVariable String showName){
         List<Show> showByName = showService.getShowByName(showName);
         if(showByName!=null &&!showByName.isEmpty()){
-            return R.ok().setData(showByName);
+            return R.ok().data("show",showByName);
         }
-        return R.error("无查询结果");
+        return R.error().message("查询无结果");
     }
 
     @PostMapping("/createShow")
     public R createShow(@RequestBody Show show){
         int i = showService.createShow(show);
         if(i>0){
-            return R.ok().put("id",show.getId());
+            return R.ok().data("id",show.getId());
         }
-        return R.error(444,"创建Show失败");
+        return R.error().code(444).message("创建Show失败");
     }
 
     @DeleteMapping("/deleteShowById/{id}")
     public R deleteById(@PathVariable Long id){
         int i = showService.deleteShowById(id);
         if(i>0){
-            return R.ok();
+            return R.ok().message("删除show成功");
         }
-        return R.error("删除show失败");
+        return R.error().code(444).message("删除show失败");
     }
 
     @DeleteMapping("/deleteShowByName/{name}")
@@ -117,7 +117,7 @@ public class ShowController {
         if(i>0){
             return R.ok();
         }
-        return R.error("删除show失败");
+        return R.error().code(444).message("删除show失败");
     }
 
     @PostMapping("/updateShow")
@@ -126,6 +126,6 @@ public class ShowController {
         if(i>0){
             return R.ok();
         }
-        return R.error("更新show失败");
+        return R.error().code(444).message("更新show失败");
     }
 }
