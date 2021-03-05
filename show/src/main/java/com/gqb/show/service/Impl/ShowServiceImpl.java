@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.gqb.show.dao.ShowDao;
 import com.gqb.show.entity.Show;
+import com.gqb.show.entity.vo.CompleteShow;
+import com.gqb.show.entity.vo.QueryShow;
 import com.gqb.show.service.ShowService;
 import org.springframework.stereotype.Service;
 
@@ -40,12 +42,12 @@ public class ShowServiceImpl implements ShowService {
     *@param page,size
     *@return
     */
-    public PageInfo<Show> getShowByPage(int page,int size){
+    public PageInfo<CompleteShow> getShowByPage(int page, int size, QueryShow show){
         //开启分页插件page helper
         PageHelper.startPage(page,size);
-        List<Show> shows = showDao.getAllShows();
+        List<CompleteShow> completeShow = showDao.getCompleteShow(show);
         //封装到PageInfo
-        PageInfo<Show> pageInfo=new PageInfo<>(shows);
+        PageInfo<CompleteShow> pageInfo=new PageInfo<>(completeShow);
         return pageInfo;
     }
 

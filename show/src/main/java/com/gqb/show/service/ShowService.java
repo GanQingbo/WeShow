@@ -2,6 +2,8 @@ package com.gqb.show.service;
 
 import com.github.pagehelper.PageInfo;
 import com.gqb.show.entity.Show;
+import com.gqb.show.entity.vo.CompleteShow;
+import com.gqb.show.entity.vo.QueryShow;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -24,6 +26,6 @@ public interface ShowService {
     int deleteShowById(Long id);
     int deleteShowByName(String showName);
     int updateShow(Show show);
-    PageInfo<Show> getShowByPage(int page, int size);
+    PageInfo<CompleteShow> getShowByPage(int page, int size, QueryShow show);
     PageInfo<Show> getShowByPageAndTime(int page,int size);
 }

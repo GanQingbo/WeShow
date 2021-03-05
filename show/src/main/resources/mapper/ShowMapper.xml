@@ -18,9 +18,46 @@
         <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <resultMap id="CompleteResultMap" type="com.gqb.show.entity.vo.CompleteShow">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="show_type" property="showType" jdbcType="VARCHAR"/>
+        <id column="show_name" property="showName" jdbcType="VARCHAR"/>
+        <id column="show_performer" property="showPerformer" jdbcType="VARCHAR"/>
+        <id column="show_city" property="showCity" jdbcType="VARCHAR"/>
+        <id column="show_place" property="showPlace" jdbcType="VARCHAR"/>
+        <id column="show_time" property="showTime" jdbcType="TIMESTAMP"/>
+        <id column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <id column="show_mobile" property="showMobile" jdbcType="VARCHAR"/>
+        <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
 
     <select id="getAllShows" resultMap="BaseResultMap">
         select * from show_list
+    </select>
+
+    <select id="getCompleteShow" parameterType="com.gqb.show.entity.vo.QueryShow" resultMap="CompleteResultMap">
+        select show_list.id,show_type,show_name,show_performer,show_city,show_place,show_time,end_time,show_mobile,create_time
+        from show_list , showtype
+        where showtype.id = show_list.showtype_id
+        <if test="showType!=null">
+            AND show_type= #{showType}
+        </if>
+        <if test="showName!=null">
+            AND show_name like "%"#{showName}"%"
+        </if>
+        <if test="showPerformer!=null">
+            AND show_performer like "%"#{showPerformer}"%"
+        </if>
+        <if test="showCity!=null">
+            AND show_city like "%"#{showCity}"%"
+        </if>
+        <if test="beginTime!=null">
+            AND show_time > #{beginTime}
+        </if>
+        <if test="endTime!=null">
+            AND show_time &lt; #{endTime}
+        </if>
     </select>
 
     <select id="getShowByTime" resultMap="BaseResultMap">
@@ -65,6 +102,9 @@
     <update id="updateShow" parameterType="com.gqb.show.entity.Show">
         update show_list
         <set>
+            <if test="showTypeId!=null">
+                showtype_id=#{showTypeId},
+            </if>
             <if test="showName!=null">
                 show_name=#{showName},
             </if>
