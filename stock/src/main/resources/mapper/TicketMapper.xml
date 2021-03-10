@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.stock.dao.TicketDao">
+
+    <!--cloum是数据库建表的字段名 ,property是java实体类的属性名-->
+    <resultMap id="BaseResultMap" type="com.gqb.stock.entity.Ticket">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="show_id" property="id" jdbcType="BIGINT"/>
+        <id column="seat_type" property="showId" jdbcType="VARCHAR"/>
+        <id column="seat_price" property="seatPrice" jdbcType="DECIMAL"/>
+        <id column="seat_number" property="seatNumber" jdbcType="INTEGER"/>
+        <id column="seat_surplus" property="seatSurplus" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="getAllTicket" resultMap="BaseResultMap">
+        select * from ticket
+    </select>
+
+    <select id="getTicketById" parameterType="Long" resultMap="BaseResultMap">
+        select * from ticket where id = #{id};
+    </select>
+
+    <select id="getTicketByShow" parameterType="Long" resultMap="BaseResultMap">
+        select * from ticket where show_id = #{showId};
+    </select>
+
+    <select id="getTicketNumber" parameterType="Long"  resultType="int" >
+        select seat_surplus from ticket where id = #{id};
+    </select>
+
+    <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
+    <insert id="createTicket" parameterType="com.gqb.stock.entity.Ticket" useGeneratedKeys="true" keyProperty="id">
+        insert into ticket(show_id,seat_type,seat_price,seat_number,seat_surplus)
+            values(#{showId},#{seatType},#{seatPrice},#{seatNumber},#{seatSurplus});
+    </insert>
+
+    <delete id="deleteTicket" parameterType="Long">
+        delete from ticket where id =#{id};
+    </delete>
+
+    <update id="sellTicket" parameterType="Long">
+        update ticket set seat_surplus = seat_surplus-1 where id = #{id}
+    </update>
+
+    <update id="updateTicket" parameterType="com.gqb.stock.entity.Ticket">
+        update ticket
+        <set>
+            <if test="showId!=null">
+                show_id=#{showId},
+            </if>
+            <if test="seatType!=null">
+                seat_type=#{seatType},
+            </if>
+            <if test="seatPrice!=null">
+                seat_price=#{seatPrice},
+            </if>
+            <if test="seatNumber!=null">
+                seat_number=#{seatNumber},
+            </if>
+            <if test="seatSurplus!=null">
+                seat_surplus=#{seatSurplus},
+            </if>
+        </set>
+        where id=#{id};
+    </update>
+</mapper>
