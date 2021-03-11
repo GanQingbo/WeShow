@@ -21,6 +21,11 @@ public class TicketController {
     @Resource
     private TicketService ticketService;
 
+    /**
+    *@Description 新建Ticket
+    *@param ticket
+    *@return
+    */
     @PostMapping("/createTicket")
     public R createTicket(@RequestBody Ticket ticket) {
         int i = ticketService.createTicket(ticket);
@@ -64,5 +69,30 @@ public class TicketController {
             return  R.ok().message("删除ticket成功");
         }
         return R.error().message("删除ticket失败");
+    }
+
+    @PostMapping("/updateTicket")
+    public R updateTicket(@RequestBody Ticket ticket){
+        //更新余票数
+        ticket.setSeatSurplus(ticket.getSeatNumber());
+        int i = ticketService.updateTicket(ticket);
+        if(i>0){
+            return  R.ok().message("更新ticket信息成功");
+        }
+        return R.error().message("更新ticket信息失败");
+    }
+
+    @PostMapping("/sellTicket/{id}")
+    public R sellTicket(@PathVariable Long id){
+        int i = ticketService.sellTicket(id);
+        int j=ticketService.getTicketNumber(id);
+        if(j==0){
+            return R.error().message("票已卖光啦");
+        }
+        if(i>0){
+            //返回剩余票数
+            return R.ok().message("售票成功").data("number",j);
+        }
+        return R.error().message("售票失败");
     }
 }

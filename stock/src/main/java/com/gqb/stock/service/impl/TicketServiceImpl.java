@@ -21,6 +21,8 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public int createTicket(Ticket ticket) {
+        //初始化余票数等于总票数
+        ticket.setSeatSurplus(ticket.getSeatNumber());
         int i = ticketDao.createTicket(ticket);
         return i;
     }
