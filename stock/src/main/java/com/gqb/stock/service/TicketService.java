@@ -3,6 +3,7 @@ package com.gqb.stock.service;
 import com.gqb.stock.entity.Ticket;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -27,4 +28,8 @@ public interface TicketService {
     List<Ticket> getTicketByShow(Long showId);
 
     List<Ticket> getAllTicket();
+
+    BigDecimal getPrice(Long id);
+
+    int getSurplus(Long id);
 }

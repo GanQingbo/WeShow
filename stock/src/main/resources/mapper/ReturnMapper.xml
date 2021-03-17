@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.stock.dao.TicketReturnDao">
+
+    <!--cloum是数据库建表的字段名 ,property是java实体类的属性名-->
+    <resultMap id="BaseResultMap" type="com.gqb.stock.entity.TicketReturn">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="ticket_id" property="TicketId" jdbcType="BIGINT"/>
+        <id column="seat_no" property="seatNo" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="getTicketReturnById" parameterType="Long" resultMap="BaseResultMap">
+        select * from ticket_return where id = #{id};
+    </select>
+
+    <select id="getTicketReturnByShow" parameterType="Long" resultMap="BaseResultMap">
+        select ticket_return.id,ticket_id,seat_no from ticket  join ticket_return on ticket.show_id = #{showId} and ticket.id=ticket_return.ticket_id
+    </select>
+
+    <select id="getTicketReturnByTicketId" parameterType="Long" resultMap="BaseResultMap">
+        select * from ticket_return where ticket_id = #{ticketId}
+    </select>
+
+    <select id="getCurrentNo" parameterType="Long" resultType="java.lang.Integer">
+        select seat_no from ticket_return where ticket_id = #{ticketId} order by seat_no limit 1
+    </select>
+
+    <select id="getTicketNumber" parameterType="Long" resultType="java.lang.Integer">
+        select count(*) from ticket_return where ticket_id = #{ticketId}
+    </select>
+
+    <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
+    <insert id="createTicketReturn" parameterType="com.gqb.stock.entity.TicketReturn" useGeneratedKeys="true" keyProperty="id">
+        insert into ticket_return(ticket_id,seat_no) values(#{ticketId},#{seatNo});
+    </insert>
+
+    <delete id="deleteTicketReturn" parameterType="Long">
+        delete from ticket_return where ticket_id=#{ticketId}  order by seat_no limit 1
+    </delete>
+
+    <update id="updateTicketReturn" parameterType="com.gqb.stock.entity.TicketReturn">
+        update ticket_return
+        <set>
+            <if test="ticketId!=null">
+                ticket_id=#{ticketId},
+            </if>
+            <if test="seatNo!=null">
+                seat_no=#{seatNo},
+            </if>
+        </set>
+        where id=#{id};
+    </update>
+</mapper>

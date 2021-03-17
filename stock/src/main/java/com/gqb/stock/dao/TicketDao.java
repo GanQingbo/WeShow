@@ -4,6 +4,7 @@ import com.gqb.stock.entity.Ticket;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -15,19 +16,33 @@ import java.util.List;
 @Mapper
 public interface TicketDao {
 
-    int createTicket(Ticket ticket);
+    Integer createTicket(Ticket ticket);
 
-    int sellTicket(@Param("id") Long id);
+    Integer updateSurplusReduce(@Param("id") Long id);
 
-    int getTicketNumber(@Param("id") Long id);
+    Integer updateSurplusPlus(@Param("id") Long id);
 
-    int updateTicket(Ticket ticket);
+    Integer updateReturnStatus(@Param("id") Long id);
 
-    int deleteTicket(@Param("id") Long id);
+    Integer getTicketNumber(@Param("id") Long id);
+
+    Byte getReturnStatus(@Param("id") Long id);
+
+    Integer getSurplus(@Param("id") Long id);
+
+    Integer getCurrentNo(@Param("id") Long id);
+
+    Integer sellTicket(@Param("id") Long id);
+
+    Integer updateTicket(Ticket ticket);
+
+    Integer deleteTicket(@Param("id") Long id);
 
     Ticket getTicketById(@Param("id") Long id);
 
     List<Ticket> getTicketByShow(@Param("showId") Long showId);
 
     List<Ticket> getAllTicket();
+
+    BigDecimal getPrice(@Param("id") Long id);
 }

@@ -9,7 +9,9 @@
         <id column="seat_type" property="seatType" jdbcType="VARCHAR"/>
         <id column="seat_price" property="seatPrice" jdbcType="DECIMAL"/>
         <id column="seat_number" property="seatNumber" jdbcType="INTEGER"/>
+        <id column="current_no" property="currentNo" jdbcType="INTEGER"/>
         <id column="seat_surplus" property="seatSurplus" jdbcType="INTEGER"/>
+        <id column="return_status" property="returnStatus" jdbcType="TINYINT"/>
     </resultMap>
 
     <select id="getAllTicket" resultMap="BaseResultMap">
@@ -24,8 +26,24 @@
         select * from ticket where show_id = #{showId};
     </select>
 
-    <select id="getTicketNumber" parameterType="Long"  resultType="int" >
+    <select id="getTicketNumber" parameterType="Long" resultType="java.lang.Integer">
+        select seat_number from ticket where id = #{id};
+    </select>
+
+    <select id="getPrice" parameterType="Long" resultType="java.math.BigDecimal">
+        select seat_price from ticket where id = #{id};
+    </select>
+
+    <select id="getReturnStatus" parameterType="Long" resultType="java.lang.Byte">
+        select return_status from ticket where id = #{id};
+    </select>
+
+    <select id="getSurplus" parameterType="Long" resultType="java.lang.Integer">
         select seat_surplus from ticket where id = #{id};
+    </select>
+
+    <select id="getCurrentNo" parameterType="Long" resultType="java.lang.Integer">
+        select current_no from ticket where id = #{id};
     </select>
 
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
@@ -38,8 +56,24 @@
         delete from ticket where id =#{id};
     </delete>
 
-    <update id="sellTicket" parameterType="Long">
+    <update id="updateSurplusPlus" parameterType="Long">
+        update ticket set seat_surplus = seat_surplus+1 where id = #{id}
+    </update>
+
+    <update id="updateSurplusReduce" parameterType="Long">
         update ticket set seat_surplus = seat_surplus-1 where id = #{id}
+    </update>
+
+    <update id="updateCurrentNo" parameterType="Long">
+         update ticket set current_no = current_no + 1 where id = #{id}
+    </update>
+
+    <update id="sellTicket" parameterType="Long">
+        update ticket set seat_surplus = seat_surplus-1,current_no = current_no + 1 where id=#{id} and seat_surplus>0
+    </update>
+
+    <update id="updateReturnStatus" parameterType="Long">
+        update ticket set return_status = 0 where id=#{id}
     </update>
 
     <update id="updateTicket" parameterType="com.gqb.stock.entity.Ticket">

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.order.dao.OrderDao">
+    <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
+    <insert id="createOrder" parameterType="com.gqb.order.entity.Order" useGeneratedKeys="true" keyProperty="id">
+        insert into order_list(order_sn,user_id,show_id,id_number,ticket_id)
+            values(#{orderSn},#{userId},#{showId},#{idNumber},#{ticketId});
+    </insert>
+    <update id="updateSeatAndAmount" parameterType="com.gqb.order.entity.Order">
+        update order_list set seat_no = #{seatNo},order_amount = order_amount + #{orderAmount} where id=#{id}
+    </update>
+</mapper>

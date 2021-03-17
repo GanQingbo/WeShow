@@ -31,6 +31,11 @@ public class Ticket implements Serializable {
      */
     private int seatNumber;
     /**
+     * 当前座位号
+     */
+    private int currentNo;
+
+    /**
      * 剩余座位数
      */
     private int seatSurplus;
@@ -96,15 +101,24 @@ public class Ticket implements Serializable {
         this.returnStatus = returnStatus;
     }
 
+    public int getCurrentNo() {
+        return currentNo;
+    }
+
+    public void setCurrentNo(int currentNo) {
+        this.currentNo = currentNo;
+    }
+
     public Ticket() {
     }
 
-    public Ticket(Long id, Long showId, String seatType, BigDecimal seatPrice, int seatNumber, int seatSurplus, byte returnStatus) {
+    public Ticket(Long id, Long showId, String seatType, BigDecimal seatPrice, int seatNumber, int currentNo, int seatSurplus, byte returnStatus) {
         this.id = id;
         this.showId = showId;
         this.seatType = seatType;
         this.seatPrice = seatPrice;
         this.seatNumber = seatNumber;
+        this.currentNo = currentNo;
         this.seatSurplus = seatSurplus;
         this.returnStatus = returnStatus;
     }

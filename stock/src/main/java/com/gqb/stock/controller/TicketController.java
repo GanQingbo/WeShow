@@ -6,6 +6,7 @@ import com.gqb.stock.service.TicketService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public class TicketController {
     }
 
     @GetMapping("/getTicketById/{id}")
-    public R getTicketById(@PathVariable Long id) {
+    public R getTicketById(@PathVariable(value = "id") Long id) {
         Ticket ticketById = ticketService.getTicketById(id);
         if (ticketById != null) {
             return R.ok().data("ticket", ticketById);
@@ -45,7 +46,7 @@ public class TicketController {
     }
 
     @GetMapping("/getTicketByShow/{showId}")
-    public R getTicketByShow(@PathVariable Long showId) {
+    public R getTicketByShow(@PathVariable(value = "showId") Long showId) {
         List<Ticket> ticketByShow = ticketService.getTicketByShow(showId);
         if (ticketByShow != null && !ticketByShow.isEmpty()){
             return R.ok().data("ticket",ticketByShow);
@@ -63,7 +64,7 @@ public class TicketController {
     }
 
     @DeleteMapping("/deleteTicket/{id}")
-    public R deleteTicket(@PathVariable Long id){
+    public R deleteTicket(@PathVariable(value = "id") Long id){
         int i = ticketService.deleteTicket(id);
         if(i>0){
             return  R.ok().message("删除ticket成功");
@@ -83,16 +84,24 @@ public class TicketController {
     }
 
     @PostMapping("/sellTicket/{id}")
-    public R sellTicket(@PathVariable Long id){
+    public R sellTicket(@PathVariable(value = "id") Long id){
         int i = ticketService.sellTicket(id);
-        int j=ticketService.getTicketNumber(id);
-        if(j==0){
-            return R.error().message("票已卖光啦");
-        }
         if(i>0){
             //返回剩余票数
-            return R.ok().message("售票成功").data("number",j);
+            return R.ok().message("售票成功").data("seat_no",i);
         }
         return R.error().message("售票失败");
+    }
+
+    @GetMapping("/getPriceById/{id}")
+    public BigDecimal getPriceById(@PathVariable(value = "id") Long id){
+        BigDecimal price = ticketService.getPrice(id);
+        return price;
+    }
+
+    @GetMapping("/getSurplusById/{id}")
+    public Integer getSurplusById(@PathVariable(value = "id") Long id){
+        int surplus = ticketService.getSurplus(id);
+        return surplus;
     }
 }
