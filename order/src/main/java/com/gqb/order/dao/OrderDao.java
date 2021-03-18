@@ -1,7 +1,11 @@
 package com.gqb.order.dao;
 
 import com.gqb.order.entity.Order;
+import com.gqb.order.entity.OrderReturn;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author GanQingbo
@@ -13,4 +17,11 @@ import org.apache.ibatis.annotations.Mapper;
 public interface OrderDao {
     int createOrder(Order order);
     int updateSeatAndAmount(Order order);
+    List<Order> getAllOrders();
+    List<Order> getOrderQuery(Order order);
+    Order getOrderById(@Param("id") Long id);
+    int updateOrder(Order order);
+    int deleteOrder(@Param("id") Long id);
+    int updateOrderDeleteStatus(Order order);
+
 }

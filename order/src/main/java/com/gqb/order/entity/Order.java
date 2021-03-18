@@ -53,6 +53,10 @@ public class Order implements Serializable {
      */
     private Byte deleteStatus;
     /**
+     * 创建时间
+     */
+    private Date createTime;
+    /**
      * 更新时间
      */
     private Date updateTime;
@@ -169,10 +173,18 @@ public class Order implements Serializable {
         this.paymentType = paymentType;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
     public Order() {
     }
 
-    public Order(Long id, String orderSn, Long userId, Long showId, String idNumber, Long ticketId, Integer seatNo, BigDecimal orderAmount, Byte orderStatus, Byte deleteStatus, Date updateTime, Date paymentTime, Byte paymentType) {
+    public Order(Long id, String orderSn, Long userId, Long showId, String idNumber, Long ticketId, Integer seatNo, BigDecimal orderAmount, Byte orderStatus, Byte deleteStatus, Date createTime, Date updateTime, Date paymentTime, Byte paymentType) {
         this.id = id;
         this.orderSn = orderSn;
         this.userId = userId;
@@ -183,6 +195,7 @@ public class Order implements Serializable {
         this.orderAmount = orderAmount;
         this.orderStatus = orderStatus;
         this.deleteStatus = deleteStatus;
+        this.createTime = createTime;
         this.updateTime = updateTime;
         this.paymentTime = paymentTime;
         this.paymentType = paymentType;
@@ -201,6 +214,7 @@ public class Order implements Serializable {
                 ", orderAmount=" + orderAmount +
                 ", orderStatus=" + orderStatus +
                 ", deleteStatus=" + deleteStatus +
+                ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", paymentTime=" + paymentTime +
                 ", paymentType=" + paymentType +

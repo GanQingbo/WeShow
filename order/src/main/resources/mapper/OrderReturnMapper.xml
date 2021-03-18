@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.order.dao.OrderReturnDao">
+
+    <!--cloum是数据库建表的字段名 ,property是java实体类的属性名-->
+    <resultMap id="BaseResultMap" type="com.gqb.order.entity.OrderReturn">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <id column="admin_id" property="adminId" jdbcType="BIGINT"/>
+        <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <id column="handle_time" property="handleTime" jdbcType="TIMESTAMP"/>
+        <id column="return_status" property="returnStatus" jdbcType="TINYINT"/>
+        <id column="return_money" property="returnMoney" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
+    <insert id="createOrderReturn" parameterType="com.gqb.order.entity.OrderReturn" useGeneratedKeys="true" keyProperty="id">
+        insert into order_return(order_id) values(#{orderId});
+    </insert>
+
+    <select id="getOrderReturnQuery" parameterType="com.gqb.order.entity.OrderReturn" resultMap="BaseResultMap">
+        select *
+        from order_return
+        where id > 0
+        <if test="id!=null">
+            AND id= #{id}
+        </if>
+        <if test="orderId!=null">
+            AND order_id=#{orderId}
+        </if>
+        <if test="adminId!=null">
+            AND admin_id=#{adminId}
+        </if>
+        <if test="returnStatus!=null">
+            AND return_status = #{returnStatus}
+        </if>
+        order by create_time
+    </select>
+
+
+
+    <update id="updateOrderReturn" parameterType="com.gqb.order.entity.OrderReturn">
+        update order_return
+        <set>
+            <if test="orderId!=null">
+                order_id=#{orderId},
+            </if>
+            <if test="adminId!=null">
+                admin_id=#{adminId},
+            </if>
+            <if test="handleTime!=null">
+                handle_time=#{handleTime},
+            </if>
+            <if test="returnStatus!=null">
+                return_status=#{returnStatus},
+            </if>
+            <if test="returnMoney!=null">
+                return_money=#{returnMoney},
+            </if>
+        </set>
+        where id=#{id};
+    </update>
+
+</mapper>

@@ -1,12 +1,116 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gqb.order.dao.OrderDao">
+
+    <!--cloum是数据库建表的字段名 ,property是java实体类的属性名-->
+    <resultMap id="BaseResultMap" type="com.gqb.order.entity.Order">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="order_sn" property="orderSn" jdbcType="CHAR"/>
+        <id column="user_id" property="userId" jdbcType="BIGINT"/>
+        <id column="show_id" property="showId" jdbcType="BIGINT"/>
+        <id column="id_number" property="idNumber" jdbcType="VARCHAR"/>
+        <id column="ticket_id" property="ticketId" jdbcType="BIGINT"/>
+        <id column="seat_no" property="seatNo" jdbcType="INTEGER"/>
+        <id column="order_amount" property="orderAmount" jdbcType="DECIMAL"/>
+        <id column="order_status" property="orderStatus" jdbcType="TINYINT"/>
+        <id column="delete_status" property="deleteStatus" jdbcType="TINYINT"/>
+        <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <id column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <id column="payment_time" property="paymentTime" jdbcType="TIMESTAMP"/>
+        <id column="payment_type" property="paymentType" jdbcType="TINYINT"/>
+    </resultMap>
+
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createOrder" parameterType="com.gqb.order.entity.Order" useGeneratedKeys="true" keyProperty="id">
         insert into order_list(order_sn,user_id,show_id,id_number,ticket_id)
             values(#{orderSn},#{userId},#{showId},#{idNumber},#{ticketId});
     </insert>
+
     <update id="updateSeatAndAmount" parameterType="com.gqb.order.entity.Order">
         update order_list set seat_no = #{seatNo},order_amount = order_amount + #{orderAmount} where id=#{id}
     </update>
+
+    <select id="getAllOrders" resultMap="BaseResultMap">
+        select * from order_list
+    </select>
+
+    <select id="getOrderQuery" parameterType="com.gqb.order.entity.Order" resultMap="BaseResultMap">
+        select *
+        from order_list
+        where id > 0
+        <if test="id!=null">
+            AND id= #{id}
+        </if>
+        <if test="orderSn!=null">
+            AND order_sn=#{orderSn}
+        </if>
+        <if test="userId!=null">
+            AND user_id=#{userId}
+        </if>
+        <if test="showId!=null">
+            AND show_id = #{showId}
+        </if>
+        <if test="ticketId!=null">
+            AND ticket_id = #{ticketId}
+        </if>
+        <if test="orderStatus!=null">
+            AND order_status = #{orderStatus}
+        </if>
+    </select>
+
+    <select id="getOrderById" parameterType="Long" resultMap="BaseResultMap">
+        select * from order_list where id=#{id}
+    </select>
+
+    <delete id="deleteOrder" parameterType="Long">
+        delete from order_list where id =#{id};
+    </delete>
+
+    <update id="updateOrder" parameterType="com.gqb.order.entity.Order">
+        update order_list
+        <set>
+            <if test="orderSn!=null">
+                order_sn=#{orderSn},
+            </if>
+            <if test="userId!=null">
+                user_id=#{userId},
+            </if>
+            <if test="showId!=null">
+                show_id=#{showId},
+            </if>
+            <if test="idNumber!=null">
+                id_number=#{idNumber},
+            </if>
+            <if test="ticketId!=null">
+                ticket_id=#{ticketId},
+            </if>
+            <if test="seatNo!=null">
+                seat_no=#{seatNo},
+            </if>
+            <if test="orderAmount!=null">
+                order_amount=#{orderAmount},
+            </if>
+            <if test="orderStatus!=null">
+                order_status=#{orderStatus},
+            </if>
+            <if test="deleteStatus!=null">
+                delete_status=#{deleteStatus},
+            </if>
+            <if test="updateTime!=null">
+                update_time=#{updateTime},
+            </if>
+            <if test="paymentTime!=null">
+                payment_time=#{paymentTime},
+            </if>
+            <if test="paymentType!=null">
+                payment_type=#{paymentType},
+            </if>
+        </set>
+        where id=#{id};
+    </update>
+
+    <update id="updateOrderDeleteStatus" parameterType="com.gqb.order.entity.Order">
+        update order_list set delete_status = #{status} where id = #{id}
+    </update>
+
 </mapper>
