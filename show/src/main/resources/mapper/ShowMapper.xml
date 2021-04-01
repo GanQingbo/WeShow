@@ -27,6 +27,7 @@
         <id column="show_place" property="showPlace" jdbcType="VARCHAR"/>
         <id column="show_time" property="showTime" jdbcType="TIMESTAMP"/>
         <id column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <id column="show_Poster" property="showPoster" jdbcType="VARCHAR"/>
         <id column="show_mobile" property="showMobile" jdbcType="VARCHAR"/>
         <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
@@ -37,7 +38,7 @@
     </select>
 
     <select id="getCompleteShow" parameterType="com.gqb.show.entity.vo.QueryShow" resultMap="CompleteResultMap">
-        select show_list.id,show_type,show_name,show_performer,show_city,show_place,show_time,end_time,show_mobile,create_time
+        select show_list.id,show_type,show_name,show_performer,show_city,show_place,show_time,end_time,show_mobile,show_poster,create_time
         from show_list , showtype
         where showtype.id = show_list.showtype_id
         <if test="showType!=null">
@@ -60,8 +61,18 @@
         </if>
     </select>
 
-    <select id="getShowByTime" resultMap="BaseResultMap">
-        select * from show_list where show_time > now()
+    <select id="getShowByPageAndTime" parameterType="com.gqb.show.entity.Show" resultMap="BaseResultMap">
+        select * from show_list
+         where show_time > now()
+        <if test="id!=null">
+            AND id =#{id}
+        </if>
+        <if test="showName!=null">
+            AND show_name like "%"#{showName}"%"
+        </if>
+        <if test="showCity!=null">
+            AND show_city like "%"#{showCity}"%"
+        </if>
     </select>
 
     <select id="getShowByCity" parameterType="String" resultMap="BaseResultMap">

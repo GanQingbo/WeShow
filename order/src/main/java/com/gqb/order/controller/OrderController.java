@@ -40,10 +40,13 @@ public class OrderController {
      * 售票
      * @return
      */
-    @PostMapping("/seckill")
-    public R createMuchOrder(){
-
-        return R.ok();
+    @PostMapping("/secKill")
+    public R createMuchOrder(@RequestBody Order order){
+        int i = orderService.secKill(order);
+        if(i>0){
+            return R.ok().data("order",order);
+        }
+        return R.error().message("创建订单失败");
     }
 
     @PostMapping("/getAllOrder/{page}/{size}")

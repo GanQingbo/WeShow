@@ -41,18 +41,18 @@ public class ShowController {
         return R.ok().data("show", showByPage);
     }
 
-    @GetMapping("/getShowByTime")
+   /* @GetMapping("/getShowByTime")
     public R getShowByTime() {
         List<Show> shows = showService.getShowByTime();
         if (shows != null && !shows.isEmpty()) {
             return R.ok().data("show", shows);
         }
         return R.error().message("查询无结果");
-    }
+    }*/
 
-    @GetMapping("/getShowByPageAndTime/{page}/{size}")
-    public R getShowByPageAndTime(@PathVariable("page") Integer page, @PathVariable("size") Integer size) {
-        PageInfo<Show> shows = showService.getShowByPageAndTime(page, size);
+    @PostMapping("/getShowByPageAndTime/{page}/{size}")
+    public R getShowByPageAndTime(@PathVariable("page") Integer page, @PathVariable("size") Integer size,@RequestBody Show show) {
+        PageInfo<Show> shows = showService.getShowByPageAndTime(page,size,show);
         return R.ok().data("show", shows);
     }
 

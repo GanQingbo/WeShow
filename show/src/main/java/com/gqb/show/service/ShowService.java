@@ -4,7 +4,6 @@ import com.github.pagehelper.PageInfo;
 import com.gqb.show.entity.Show;
 import com.gqb.show.entity.vo.CompleteShow;
 import com.gqb.show.entity.vo.QueryShow;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,16 +15,28 @@ import java.util.List;
  */
 public interface ShowService {
     List<Show> getAllShow();
-    List<Show> getShowByTime();
+
+//    PageInfo<Show> getShowByTime();
+
     List<Show> getShowByCity(String showCity);
+
     List<Show> getShowByPerformer(String showPerformer);
+
     List<Show> getShowByType(String showType);
+
     Show getShowById(Long id);
+
     List<Show> getShowByName(String showName);
+
     int createShow(Show show);
+
     int deleteShowById(Long id);
+
     int deleteShowByName(String showName);
+
     int updateShow(Show show);
+
     PageInfo<CompleteShow> getShowByPage(int page, int size, QueryShow show);
-    PageInfo<Show> getShowByPageAndTime(int page,int size);
+
+    PageInfo<Show> getShowByPageAndTime(int page, int size, Show show);
 }

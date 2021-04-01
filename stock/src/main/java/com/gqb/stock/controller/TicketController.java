@@ -1,7 +1,9 @@
 package com.gqb.stock.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.gqb.common.utils.R;
 import com.gqb.stock.entity.Ticket;
+import com.gqb.stock.entity.vo.TicketQuery;
 import com.gqb.stock.service.TicketService;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,18 @@ public class TicketController {
     private TicketService ticketService;
 
     /**
+     * 售票列表
+     */
+    @PostMapping("/getTicketByPage/{page}/{size}")
+    public R getTicketByPage(@PathVariable("page") Integer page, @PathVariable("size") Integer size, @RequestBody TicketQuery ticketQuery){
+        PageInfo<TicketQuery> userByPage = ticketService.getTicketByPage(page, size, ticketQuery);
+        if(userByPage!=null){
+            return R.ok().data("ticket",userByPage);
+        }
+        return R.error().message("无查询结果");
+    }
+
+    /**
     *@Description 新建Ticket
     *@param ticket
     *@return
@@ -41,6 +55,15 @@ public class TicketController {
         Ticket ticketById = ticketService.getTicketById(id);
         if (ticketById != null) {
             return R.ok().data("ticket", ticketById);
+        }
+        return R.error().message("按id查找ticket无结果");
+    }
+
+    @GetMapping("/getTicketQueryById/{id}")
+    public R getTicketQueryById(@PathVariable(value = "id") Long id) {
+        TicketQuery queryById = ticketService.getTicketQueryById(id);
+        if (queryById != null) {
+            return R.ok().data("ticket", queryById);
         }
         return R.error().message("按id查找ticket无结果");
     }
@@ -74,8 +97,6 @@ public class TicketController {
 
     @PostMapping("/updateTicket")
     public R updateTicket(@RequestBody Ticket ticket){
-        //更新余票数
-        ticket.setSeatSurplus(ticket.getSeatNumber());
         int i = ticketService.updateTicket(ticket);
         if(i>0){
             return  R.ok().message("更新ticket信息成功");

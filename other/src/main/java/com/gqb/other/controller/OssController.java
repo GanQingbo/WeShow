@@ -8,10 +8,7 @@ import com.aliyun.oss.model.PolicyConditions;
 import com.gqb.common.utils.R;
 import com.gqb.other.service.OssService;
 import com.gqb.other.utils.OssProperties;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -27,6 +24,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/oss")
+@CrossOrigin
 public class OssController {
 
     @Resource

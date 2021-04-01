@@ -91,7 +91,7 @@ public class OrderApplicationTest {
      *  1. 启动多个订单服务，同一个消息只能有一个客户端收到
      *  2. 处理业务期间不会接收消息，处理完了才会接收下一个消息
      */
-    @RabbitListener(queues = {"hello-queue"})
+    //@RabbitListener(queues = {"hello-queue"})
     public void receiveMessage(Message message, Order order, Channel channel){
         byte[] body = message.getBody();
         System.out.println("收到的消息message:"+order.toString());

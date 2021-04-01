@@ -14,12 +14,49 @@
         <id column="return_status" property="returnStatus" jdbcType="TINYINT"/>
     </resultMap>
 
+    <resultMap id="QueryResultMap" type="com.gqb.stock.entity.vo.TicketQuery">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="show_id" property="showId" jdbcType="BIGINT"/>
+        <id column="show_name" property="showName" jdbcType="VARCHAR"/>
+        <id column="seat_type" property="seatType" jdbcType="VARCHAR"/>
+        <id column="seat_price" property="seatPrice" jdbcType="DECIMAL"/>
+        <id column="seat_number" property="seatNumber" jdbcType="INTEGER"/>
+        <id column="seat_surplus" property="seatSurplus" jdbcType="INTEGER"/>
+        <id column="sell_time" property="sellTime" jdbcType="TIMESTAMP"/>
+        <id column="show_time" property="showTime" jdbcType="TIMESTAMP"/>
+        <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="getTicketByQuery" parameterType="com.gqb.stock.entity.vo.TicketQuery" resultMap="QueryResultMap">
+        select ticket.id,show_id,show_name,seat_type,seat_price,seat_number,seat_surplus,sell_time,show_time,ticket.create_time
+        from ticket,show_list
+        where ticket.show_id=show_list.id
+        <if test="id!=null">
+            AND ticket.id= #{id}
+        </if>
+        <if test="showId!=null">
+            AND show_id=#{showId}
+        </if>
+        <if test="showName!=null">
+            AND show_name like "%"#{showName}"%"
+        </if>
+        <if test="isShow!=null">
+            AND show_time > now()
+        </if>
+    </select>
+
     <select id="getAllTicket" resultMap="BaseResultMap">
         select * from ticket
     </select>
 
     <select id="getTicketById" parameterType="Long" resultMap="BaseResultMap">
         select * from ticket where id = #{id};
+    </select>
+
+    <select id="getTicketQueryById" parameterType="Long" resultMap="QueryResultMap">
+        select ticket.id,show_id,show_name,seat_type,seat_price,seat_number,seat_surplus,sell_time,show_time,ticket.create_time
+        from ticket,show_list
+        where ticket.show_id=show_list.id and ticket.id=#{id}
     </select>
 
     <select id="getTicketByShow" parameterType="Long" resultMap="BaseResultMap">
@@ -48,8 +85,8 @@
 
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createTicket" parameterType="com.gqb.stock.entity.Ticket" useGeneratedKeys="true" keyProperty="id">
-        insert into ticket(show_id,seat_type,seat_price,seat_number,seat_surplus)
-            values(#{showId},#{seatType},#{seatPrice},#{seatNumber},#{seatSurplus});
+        insert into ticket(show_id,seat_type,seat_price,seat_number,seat_surplus,sell_time)
+            values(#{showId},#{seatType},#{seatPrice},#{seatNumber},#{seatSurplus},#{sellTime});
     </insert>
 
     <delete id="deleteTicket" parameterType="Long">
@@ -93,6 +130,9 @@
             </if>
             <if test="seatSurplus!=null">
                 seat_surplus=#{seatSurplus},
+            </if>
+            <if test="sellTime!=null">
+                sell_time=#{sellTime},
             </if>
         </set>
         where id=#{id};

@@ -45,6 +45,11 @@ public class CompleteShow implements Serializable {
     private Date endTime;
 
     /**
+     * 演出海报
+     */
+    private String showPoster;
+
+    /**
      * 联系号码
      */
     private String showMobile;
@@ -135,10 +140,18 @@ public class CompleteShow implements Serializable {
         this.createTime = createTime;
     }
 
+    public String getShowPoster() {
+        return showPoster;
+    }
+
+    public void setShowPoster(String showPoster) {
+        this.showPoster = showPoster;
+    }
+
     public CompleteShow() {
     }
 
-    public CompleteShow(Long id, String showType, String showName, String showPerformer, String showCity, String showPlace, Date showTime, Date endTime, String showMobile, Date createTime) {
+    public CompleteShow(Long id, String showType, String showName, String showPerformer, String showCity, String showPlace, Date showTime, Date endTime, String showPoster, String showMobile, Date createTime) {
         this.id = id;
         this.showType = showType;
         this.showName = showName;
@@ -147,7 +160,25 @@ public class CompleteShow implements Serializable {
         this.showPlace = showPlace;
         this.showTime = showTime;
         this.endTime = endTime;
+        this.showPoster = showPoster;
         this.showMobile = showMobile;
         this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "CompleteShow{" +
+                "id=" + id +
+                ", showType='" + showType + '\'' +
+                ", showName='" + showName + '\'' +
+                ", showPerformer='" + showPerformer + '\'' +
+                ", showCity='" + showCity + '\'' +
+                ", showPlace='" + showPlace + '\'' +
+                ", showTime=" + showTime +
+                ", endTime=" + endTime +
+                ", showPoster='" + showPoster + '\'' +
+                ", showMobile='" + showMobile + '\'' +
+                ", createTime=" + createTime +
+                '}';
     }
 }

@@ -22,8 +22,8 @@
 
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createOrder" parameterType="com.gqb.order.entity.Order" useGeneratedKeys="true" keyProperty="id">
-        insert into order_list(order_sn,user_id,show_id,id_number,ticket_id)
-            values(#{orderSn},#{userId},#{showId},#{idNumber},#{ticketId});
+        insert into order_list(order_sn,user_id,show_id,id_number,ticket_id,order_amount)
+            values(#{orderSn},#{userId},#{showId},#{idNumber},#{ticketId},#{orderAmount});
     </insert>
 
     <update id="updateSeatAndAmount" parameterType="com.gqb.order.entity.Order">

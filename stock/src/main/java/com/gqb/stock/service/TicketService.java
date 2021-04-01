@@ -1,6 +1,8 @@
 package com.gqb.stock.service;
 
+import com.github.pagehelper.PageInfo;
 import com.gqb.stock.entity.Ticket;
+import com.gqb.stock.entity.vo.TicketQuery;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -25,6 +27,8 @@ public interface TicketService {
 
     Ticket getTicketById(Long id);
 
+    TicketQuery getTicketQueryById(Long id);
+
     List<Ticket> getTicketByShow(Long showId);
 
     List<Ticket> getAllTicket();
@@ -32,4 +36,6 @@ public interface TicketService {
     BigDecimal getPrice(Long id);
 
     int getSurplus(Long id);
+
+    PageInfo<TicketQuery> getTicketByPage(int page, int size, TicketQuery ticketQuery);
 }

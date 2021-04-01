@@ -1,4 +1,4 @@
-package com.gqb.stock.entity;
+package com.gqb.stock.entity.vo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -6,50 +6,29 @@ import java.util.Date;
 
 /**
  * @author GanQingbo
- * @Classname Ticket
- * @Description 座位票实体类
- * @date 2021/3/10 10:24
+ * @Classname TicketQuery
+ * @Description ticke查询的列表
+ * @date 2021/3/28 16:39
  */
-public class Ticket implements Serializable {
-
+public class TicketQuery implements Serializable {
     private static final long serialVersionUID = 1L;
-
     private Long id;
-    /**
-     * 演出id
-     */
     private Long showId;
-    /**
-     * 座位类型
-     */
+    private String showName;
     private String seatType;
-    /**
-     * 座位价格
-     */
     private BigDecimal seatPrice;
     /**
      * 座位总数
      */
     private int seatNumber;
     /**
-     * 当前座位号
-     */
-    private int currentNo;
-
-    /**
-     * 剩余座位数
+     * 余票
      */
     private int seatSurplus;
-
-    /**
-     *退票表状态，0已售完，1未售完
-     */
-    private byte returnStatus;
-
-    /**
-     *开售时间
-     */
     private Date sellTime;
+    private Date showTime;
+    private Date createTime;
+    private String isShow;
 
     public Long getId() {
         return id;
@@ -65,6 +44,14 @@ public class Ticket implements Serializable {
 
     public void setShowId(Long showId) {
         this.showId = showId;
+    }
+
+    public String getShowName() {
+        return showName;
+    }
+
+    public void setShowName(String showName) {
+        this.showName = showName;
     }
 
     public String getSeatType() {
@@ -99,22 +86,6 @@ public class Ticket implements Serializable {
         this.seatSurplus = seatSurplus;
     }
 
-    public byte getReturnStatus() {
-        return returnStatus;
-    }
-
-    public void setReturnStatus(byte returnStatus) {
-        this.returnStatus = returnStatus;
-    }
-
-    public int getCurrentNo() {
-        return currentNo;
-    }
-
-    public void setCurrentNo(int currentNo) {
-        this.currentNo = currentNo;
-    }
-
     public Date getSellTime() {
         return sellTime;
     }
@@ -123,33 +94,62 @@ public class Ticket implements Serializable {
         this.sellTime = sellTime;
     }
 
-    public Ticket() {
+
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public Ticket(Long id, Long showId, String seatType, BigDecimal seatPrice, int seatNumber, int currentNo, int seatSurplus, byte returnStatus, Date sellTime) {
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getShowTime() {
+        return showTime;
+    }
+
+    public void setShowTime(Date showTime) {
+        this.showTime = showTime;
+    }
+
+    public String getIsShow() {
+        return isShow;
+    }
+
+    public void setIsShow(String isShow) {
+        this.isShow = isShow;
+    }
+
+    public TicketQuery() {
+    }
+
+    public TicketQuery(Long id, Long showId, String showName, String seatType, BigDecimal seatPrice, int seatNumber, int seatSurplus, Date sellTime, Date showTime, Date createTime, String isShow) {
         this.id = id;
         this.showId = showId;
+        this.showName = showName;
         this.seatType = seatType;
         this.seatPrice = seatPrice;
         this.seatNumber = seatNumber;
-        this.currentNo = currentNo;
         this.seatSurplus = seatSurplus;
-        this.returnStatus = returnStatus;
         this.sellTime = sellTime;
+        this.showTime = showTime;
+        this.createTime = createTime;
+        this.isShow = isShow;
     }
 
     @Override
     public String toString() {
-        return "Ticket{" +
+        return "TicketQuery{" +
                 "id=" + id +
                 ", showId=" + showId +
+                ", showName='" + showName + '\'' +
                 ", seatType='" + seatType + '\'' +
                 ", seatPrice=" + seatPrice +
                 ", seatNumber=" + seatNumber +
-                ", currentNo=" + currentNo +
                 ", seatSurplus=" + seatSurplus +
-                ", returnStatus=" + returnStatus +
                 ", sellTime=" + sellTime +
+                ", showTime=" + showTime +
+                ", createTime=" + createTime +
+                ", isShow='" + isShow + '\'' +
                 '}';
     }
 }

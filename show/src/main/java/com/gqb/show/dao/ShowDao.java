@@ -39,4 +39,6 @@ public interface ShowDao {
     int updateShow(Show show);
 
     List<CompleteShow> getCompleteShow(QueryShow show);
+
+    List<Show> getShowByPageAndTime(Show show);
 }

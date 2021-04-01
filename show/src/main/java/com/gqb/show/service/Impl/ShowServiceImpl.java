@@ -51,16 +51,6 @@ public class ShowServiceImpl implements ShowService {
         return pageInfo;
     }
 
-    /***
-    *@Description 获取未开始的表演
-    *@param
-    *@return
-    */
-    @Override
-    public List<Show> getShowByTime() {
-        List<Show> shows = showDao.getShowByTime();
-        return shows;
-    }
 
     /***
     *@Description 分页获取未开始的表演
@@ -68,9 +58,9 @@ public class ShowServiceImpl implements ShowService {
     *@return
     */
     @Override
-    public PageInfo<Show> getShowByPageAndTime(int page,int size){
+    public PageInfo<Show> getShowByPageAndTime(int page,int size,Show show){
         PageHelper.startPage(page,size);
-        List<Show> shows = showDao.getShowByTime();
+        List<Show> shows = showDao.getShowByPageAndTime(show);
         PageInfo<Show> pageInfo=new PageInfo<>(shows);
         return pageInfo;
     }

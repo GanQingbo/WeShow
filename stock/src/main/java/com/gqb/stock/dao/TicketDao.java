@@ -1,8 +1,10 @@
 package com.gqb.stock.dao;
 
 import com.gqb.stock.entity.Ticket;
+import com.gqb.stock.entity.vo.TicketQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -45,4 +47,8 @@ public interface TicketDao {
     List<Ticket> getAllTicket();
 
     BigDecimal getPrice(@Param("id") Long id);
+
+    List<TicketQuery> getTicketByQuery(TicketQuery ticketQuery);
+
+    TicketQuery getTicketQueryById(@Param("id") Long id);
 }
