@@ -22,6 +22,7 @@ public class ShowCommendController {
     @Resource
     RecommendService recommendService;
 
+
     @GetMapping("/getAllRecommend")
     public R getAllCommend(){
         List<Recommend> allRecommend = recommendService.getAllRecommend();
@@ -30,14 +31,14 @@ public class ShowCommendController {
         }
         return R.error();
     }
-
+    //缓存
     @GetMapping("/getShowRecommend")
     public R getShowCommend(){
         List<Show> recommend = recommendService.getShowRecommend();
         if(recommend!=null){
             return R.ok().data("show",recommend);
         }
-        return R.error();
+        return R.error().message("缓存加载失败");
     }
 
     @PostMapping("/createShowRecommend/{id}")
