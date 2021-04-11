@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.show.dao.ShowHeatDao">
+    <resultMap id="ResultMap" type="com.gqb.show.entity.ShowHeat">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="show_id" property="showId" jdbcType="BIGINT"/>
+        <id column="clicks" property="clicks" jdbcType="INTEGER"/>
+        <id column="likes" property="likes" jdbcType="INTEGER"/>
+        <id column="comments" property="comments" jdbcType="INTEGER"/>
+        <id column="heat" property="heat" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id="createShowHeat" parameterType="Long" useGeneratedKeys="true" keyProperty="id">
+        insert into show_heat(show_id)
+        values(#{id})
+    </insert>
+</mapper>

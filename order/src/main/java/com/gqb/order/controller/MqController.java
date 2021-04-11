@@ -17,9 +17,8 @@ import java.util.UUID;
  * @Description
  * @date 2021/3/13 11:44
  */
-@RequestMapping("/mq")
+@RequestMapping("/order")
 @RestController
-@CrossOrigin
 public class MqController {
     @Resource
     RabbitTemplate rabbitTemplate;

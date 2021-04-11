@@ -1,0 +1,40 @@
+server:
+    port: 9001
+
+spring:
+  application:
+    name: weshow-service-gateway
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver  #mysql驱动
+    url: jdbc:mysql://47.101.153.229:3306/weshow?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: Gqb6666.
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 159.75.112.187:1111 #nacos集群地址
+    gateway:
+      discovery:
+        locator:
+          enabled: true #开启gateway动态创建路由
+      routes:
+        - id: show_route
+          uri: lb://weshow-service-show
+          predicates:
+            - Path=/show/**
+        - id: user_route
+          uri: lb://weshow-service-user
+          predicates:
+            - Path=/user/**
+        - id: order_route
+          uri: lb://weshow-service-order
+          predicates:
+            - Path=/order/**
+        - id: stock_route
+          uri: lb://weshow-service-stock
+          predicates:
+            - Path=/ticket/**
+        - id: other_route
+          uri: lb://weshow-service-other
+          predicates:
+            - Path=/other/**

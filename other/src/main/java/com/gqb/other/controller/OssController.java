@@ -23,8 +23,7 @@ import java.util.Map;
  * @date 2021/3/7 16:24
  */
 @RestController
-@RequestMapping("/oss")
-@CrossOrigin
+@RequestMapping("/other/oss")
 public class OssController {
 
     @Resource

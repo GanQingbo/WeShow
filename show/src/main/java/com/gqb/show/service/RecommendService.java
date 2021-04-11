@@ -14,6 +14,8 @@ import java.util.List;
 public interface RecommendService {
     List<Show> getShowRecommend();
     List<Recommend> getAllRecommend();
+    List<Show> getHotShow();
+    List<Show> getPersonalRecommend();
     int createShowRecommend(Long id);
     int deleteShowRecommend(Long id);
 }

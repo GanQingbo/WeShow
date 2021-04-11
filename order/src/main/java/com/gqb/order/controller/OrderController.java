@@ -17,7 +17,6 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/order")
-@CrossOrigin
 public class OrderController {
     @Resource
     OrderService orderService;
@@ -37,10 +36,10 @@ public class OrderController {
     }
 
     /**
-     * 售票
+     * 售票,走一般的流程
      * @return
      */
-    @PostMapping("/secKill")
+    @PostMapping("/secKillTest")
     public R createMuchOrder(@RequestBody Order order){
         int i = orderService.secKill(order);
         if(i>0){

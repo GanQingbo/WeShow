@@ -16,7 +16,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/show/showtype")
-@CrossOrigin
 public class ShowTypeController {
     @Resource
     private ShowTypeService showTypeService;

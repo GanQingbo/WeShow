@@ -16,7 +16,6 @@ import javax.annotation.Resource;
  **/
 @RestController
 @RequestMapping("/order")
-@CrossOrigin
 public class OrderReturnController {
     @Resource
     OrderService orderService;

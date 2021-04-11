@@ -43,4 +43,9 @@
     <select id="getRecommendCount" resultType="Integer">
         select count(*) from recommend
     </select>
+
+    <select id="getShowByHeat" resultMap="BaseResultMap">
+         select show_list.* from show_list join show_heat on show_list.id=show_heat.show_id
+        where show_list.show_time>now() order by heat desc limit 10
+    </select>
 </mapper>

@@ -17,7 +17,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/show/recommend")
-@CrossOrigin
 public class ShowCommendController {
     @Resource
     RecommendService recommendService;
@@ -60,5 +59,21 @@ public class ShowCommendController {
             return R.ok();
         }
         return R.error();
+    }
+
+    //热度前十的演出
+    @GetMapping("/topHot")
+    public R topHotShow(){
+        List<Show> shows = recommendService.getHotShow();
+        if(shows!=null && shows.size()!=0){
+            return R.ok().data("show",shows);
+        }
+        return R.error().message("获取排行榜失败");
+    }
+
+    //个人推荐
+    @GetMapping("/personalRecommend")
+    public R personalRecommend(){
+        return null;
     }
 }

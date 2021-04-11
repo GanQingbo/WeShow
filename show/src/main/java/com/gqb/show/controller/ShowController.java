@@ -19,7 +19,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/show/show")
-@CrossOrigin
 public class ShowController {
     @Resource
     private ShowService showService;
@@ -104,7 +103,8 @@ public class ShowController {
     @PostMapping("/createShow")
     public R createShow(@RequestBody Show show) {
         int i = showService.createShow(show);
-        if (i > 0) {
+        int j = showService.createShowHeat(show.getId());
+        if (i > 0 && j>0) {
             return R.ok().data("id", show.getId());
         }
         return R.error().message("创建Show失败");

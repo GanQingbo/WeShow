@@ -3,6 +3,7 @@ package com.gqb.show.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.gqb.show.dao.ShowDao;
+import com.gqb.show.dao.ShowHeatDao;
 import com.gqb.show.entity.Show;
 import com.gqb.show.entity.vo.CompleteShow;
 import com.gqb.show.entity.vo.QueryShow;
@@ -22,6 +23,9 @@ import java.util.List;
 public class ShowServiceImpl implements ShowService {
     @Resource
     private ShowDao showDao;
+
+    @Resource
+    private ShowHeatDao showHeatDao;
 
     /***
     *@Description 获取全部表演信息
@@ -95,12 +99,26 @@ public class ShowServiceImpl implements ShowService {
         return showByName;
     }
 
+    /**
+     * 添加演出
+     * @param show
+     * @return
+     */
     @Override
     public int createShow(Show show) {
         if(show!=null){
-            return showDao.createShow(show);
+            if(showDao.createShow(show)==1){
+                return 1;
+            }
         }
        return 0;
+    }
+
+
+    @Override
+    public int createShowHeat(Long id) {
+        int showHeat = showHeatDao.createShowHeat(id);
+        return showHeat;
     }
 
     @Override
@@ -117,4 +135,5 @@ public class ShowServiceImpl implements ShowService {
     public int updateShow(Show show) {
         return showDao.updateShow(show);
     }
+
 }

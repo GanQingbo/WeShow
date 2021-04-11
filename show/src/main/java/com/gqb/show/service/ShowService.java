@@ -30,6 +30,8 @@ public interface ShowService {
 
     int createShow(Show show);
 
+    int createShowHeat(Long id);
+
     int deleteShowById(Long id);
 
     int deleteShowByName(String showName);
@@ -39,4 +41,5 @@ public interface ShowService {
     PageInfo<CompleteShow> getShowByPage(int page, int size, QueryShow show);
 
     PageInfo<Show> getShowByPageAndTime(int page, int size, Show show);
+
 }

@@ -20,4 +20,5 @@ public interface RecommendDao {
     int createRecommend(@Param("id") Long id);
     List<Recommend> getAllRecommend();
     int getRecommendCount();
+    List<Show> getShowByHeat();
 }
