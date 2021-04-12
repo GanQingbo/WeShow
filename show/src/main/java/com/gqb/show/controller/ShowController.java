@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.gqb.common.utils.R;
 import com.gqb.show.entity.Show;
 import com.gqb.show.entity.vo.CompleteShow;
+import com.gqb.show.entity.vo.QueryAllShow;
 import com.gqb.show.entity.vo.QueryShow;
 import com.gqb.show.service.ShowService;
 import org.springframework.web.bind.annotation.*;
@@ -135,5 +136,15 @@ public class ShowController {
             return R.ok();
         }
         return R.error().message("更新show失败");
+    }
+
+    //前台获取show数据
+    @PostMapping("/getAllShowByQuery")
+    public R getAllShowByQuery(@RequestBody QueryAllShow queryShow){
+        List<Show> allShowByQuery = showService.getAllShowByQuery(queryShow);
+        if(allShowByQuery!=null &&allShowByQuery.size()!=0){
+            return R.ok().data("show",allShowByQuery);
+        }
+        return R.error();
     }
 }

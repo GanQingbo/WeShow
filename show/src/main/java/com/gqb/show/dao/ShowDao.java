@@ -2,6 +2,7 @@ package com.gqb.show.dao;
 
 import com.gqb.show.entity.Show;
 import com.gqb.show.entity.vo.CompleteShow;
+import com.gqb.show.entity.vo.QueryAllShow;
 import com.gqb.show.entity.vo.QueryShow;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -41,4 +42,6 @@ public interface ShowDao {
     List<CompleteShow> getCompleteShow(QueryShow show);
 
     List<Show> getShowByPageAndTime(Show show);
+
+    List<Show> getAllShowByQuery(QueryAllShow queryShow);
 }

@@ -32,9 +32,60 @@
         <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <resultMap id="PerfectShowResultMap" type="com.gqb.show.entity.vo.PerfectShow">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="show_type" property="showType" jdbcType="VARCHAR"/>
+        <id column="show_name" property="showName" jdbcType="VARCHAR"/>
+        <id column="show_intro" property="showIntro" jdbcType="VARCHAR"/>
+        <id column="show_performer" property="showPerformer" jdbcType="VARCHAR"/>
+        <id column="show_city" property="showCity" jdbcType="VARCHAR"/>
+        <id column="show_place" property="showPlace" jdbcType="VARCHAR"/>
+        <id column="show_time" property="showTime" jdbcType="TIMESTAMP"/>
+        <id column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <id column="show_poster" property="showPoster" jdbcType="VARCHAR"/>
+        <id column="show_mobile" property="showMobile" jdbcType="VARCHAR"/>
+        <id column="seat_type" property="seatType" jdbcType="VARCHAR"/>
+        <id column="seat_price" property="seatPrice" jdbcType="DECIMAL"/>
+        <id column="seat_number" property="seatNumber" jdbcType="INTEGER"/>
+        <id column="seat_surplus" property="seatSurplus" jdbcType="INTEGER"/>
+        <id column="sell_time" property="sellTime" jdbcType="TIMESTAMP"/>
+        <id column="heat" property="heat" jdbcType="INTEGER"/>
+    </resultMap>
+
 
     <select id="getAllShows" resultMap="BaseResultMap">
         select * from show_list
+    </select>
+
+    <!--列表显示，合并数据-->
+    <select id="getAllShowByQuery" parameterType="com.gqb.show.entity.vo.QueryAllShow" resultMap="PerfectShowResultMap">
+
+    </select>
+
+    <!--不合并-->
+    <select id="getPerfectShow" parameterType="com.gqb.show.entity.vo.QueryAllShow" resultMap="PerfectShowResultMap">
+        select show_list.*,showtype.show_type,ticket.seat_type,ticket.seat_price,ticket.seat_number,ticket.seat_surplus,heat
+        from show_list,show_type,show_heat,ticket
+        where showtype.id = show_list.showtype_id
+        AND show_list.id=ticket.show_id
+        AND show_list.id=show_heat.show_id
+        <if test="showType!=null">
+            AND show_type= #{showType}
+        </if>
+        <if test="showCity!=null">
+            AND show_city like "%"#{showCity}"%"
+        </if>
+        <if test="showTime==0">
+            AND show_time > now()
+        </if>
+        <if test="showTime==7">
+            AND show_time > now()
+            AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) >= date(show_time)
+        </if>
+        <if test="showTime==30">
+            AND show_time > now()
+            AND DATE_ADD(CURDATE(), INTERVAL 1 MONTH ) >= date(show_time)
+        </if>
     </select>
 
     <select id="getCompleteShow" parameterType="com.gqb.show.entity.vo.QueryShow" resultMap="CompleteResultMap">

@@ -6,11 +6,13 @@ import com.gqb.show.dao.ShowDao;
 import com.gqb.show.dao.ShowHeatDao;
 import com.gqb.show.entity.Show;
 import com.gqb.show.entity.vo.CompleteShow;
+import com.gqb.show.entity.vo.QueryAllShow;
 import com.gqb.show.entity.vo.QueryShow;
 import com.gqb.show.service.ShowService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,6 +69,23 @@ public class ShowServiceImpl implements ShowService {
         List<Show> shows = showDao.getShowByPageAndTime(show);
         PageInfo<Show> pageInfo=new PageInfo<>(shows);
         return pageInfo;
+    }
+
+    /**
+     * 前台Show带条件的查询
+     * @param queryShow
+     * @return
+     */
+    @Override
+    public List<Show> getAllShowByQuery(QueryAllShow queryShow) {
+        if(queryShow.getShowType()=="全部演出"){
+            queryShow.setShowType("");
+        }
+        if(queryShow.getShowCity()=="全国"){
+            queryShow.setShowCity("");
+        }
+        List<Show> shows = showDao.getAllShowByQuery(queryShow);
+        return shows;
     }
 
     @Override
