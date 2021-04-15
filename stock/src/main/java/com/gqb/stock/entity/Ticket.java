@@ -42,6 +42,10 @@ public class Ticket implements Serializable {
     private int seatSurplus;
 
     /**
+     * 锁定的座位数
+     */
+    private int seatLocked;
+    /**
      *退票表状态，0已售完，1未售完
      */
     private byte returnStatus;
@@ -123,10 +127,18 @@ public class Ticket implements Serializable {
         this.sellTime = sellTime;
     }
 
+    public int getSeatLocked() {
+        return seatLocked;
+    }
+
+    public void setSeatLocked(int seatLocked) {
+        this.seatLocked = seatLocked;
+    }
+
     public Ticket() {
     }
 
-    public Ticket(Long id, Long showId, String seatType, BigDecimal seatPrice, int seatNumber, int currentNo, int seatSurplus, byte returnStatus, Date sellTime) {
+    public Ticket(Long id, Long showId, String seatType, BigDecimal seatPrice, int seatNumber, int currentNo, int seatSurplus, int seatLocked, byte returnStatus, Date sellTime) {
         this.id = id;
         this.showId = showId;
         this.seatType = seatType;
@@ -134,6 +146,7 @@ public class Ticket implements Serializable {
         this.seatNumber = seatNumber;
         this.currentNo = currentNo;
         this.seatSurplus = seatSurplus;
+        this.seatLocked = seatLocked;
         this.returnStatus = returnStatus;
         this.sellTime = sellTime;
     }
@@ -148,6 +161,7 @@ public class Ticket implements Serializable {
                 ", seatNumber=" + seatNumber +
                 ", currentNo=" + currentNo +
                 ", seatSurplus=" + seatSurplus +
+                ", seatLocked=" + seatLocked +
                 ", returnStatus=" + returnStatus +
                 ", sellTime=" + sellTime +
                 '}';

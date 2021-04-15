@@ -11,7 +11,9 @@
         <id column="seat_number" property="seatNumber" jdbcType="INTEGER"/>
         <id column="current_no" property="currentNo" jdbcType="INTEGER"/>
         <id column="seat_surplus" property="seatSurplus" jdbcType="INTEGER"/>
+        <id column="seat_locked" property="seatLocked" jdbcType="INTEGER"/>
         <id column="return_status" property="returnStatus" jdbcType="TINYINT"/>
+        <id column="sell_time" property="sellTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="QueryResultMap" type="com.gqb.stock.entity.vo.TicketQuery">
@@ -83,6 +85,10 @@
         select current_no from ticket where id = #{id};
     </select>
 
+    <select id="getShowIdByTicketId" parameterType="Long" resultType="java.lang.Long">
+        select show_id from ticket where id = #{id};
+    </select>
+
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createTicket" parameterType="com.gqb.stock.entity.Ticket" useGeneratedKeys="true" keyProperty="id">
         insert into ticket(show_id,seat_type,seat_price,seat_number,seat_surplus,sell_time)
@@ -111,6 +117,12 @@
 
     <update id="updateReturnStatus" parameterType="Long">
         update ticket set return_status = 0 where id=#{id}
+    </update>
+
+    <update id="updateTicketLocked" parameterType="com.gqb.stock.entity.vo.TicketLockVo">
+        update ticket set seat_locked = seat_locked + #{number}
+        where id=#{id}
+        and seat_surplus > seat_locked + #{number}
     </update>
 
     <update id="updateTicket" parameterType="com.gqb.stock.entity.Ticket">

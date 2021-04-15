@@ -6,9 +6,11 @@ import com.gqb.show.dao.ShowDao;
 import com.gqb.show.dao.ShowHeatDao;
 import com.gqb.show.entity.Show;
 import com.gqb.show.entity.vo.CompleteShow;
+import com.gqb.show.entity.vo.PerfectShow;
 import com.gqb.show.entity.vo.QueryAllShow;
 import com.gqb.show.entity.vo.QueryShow;
 import com.gqb.show.service.ShowService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,6 +24,7 @@ import java.util.List;
  * @date 2021/2/25 18:25
  */
 @Service
+@Slf4j
 public class ShowServiceImpl implements ShowService {
     @Resource
     private ShowDao showDao;
@@ -77,14 +80,16 @@ public class ShowServiceImpl implements ShowService {
      * @return
      */
     @Override
-    public List<Show> getAllShowByQuery(QueryAllShow queryShow) {
-        if(queryShow.getShowType()=="全部演出"){
+    public List<PerfectShow> getAllShowByQuery(QueryAllShow queryShow) {
+        /*log.info("======showType1:"+queryShow.getShowType());
+        if(queryShow.getShowType().equals("全部演出")){
             queryShow.setShowType("");
+            log.info("======showType2:"+queryShow.getShowType());
         }
-        if(queryShow.getShowCity()=="全国"){
+        if(queryShow.getShowCity()!=null && queryShow.getShowCity().equals("全国")){
             queryShow.setShowCity("");
-        }
-        List<Show> shows = showDao.getAllShowByQuery(queryShow);
+        }*/
+        List<PerfectShow> shows = showDao.getAllShowByQuery(queryShow);
         return shows;
     }
 

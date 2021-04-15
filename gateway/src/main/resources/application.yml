@@ -38,3 +38,7 @@ spring:
           uri: lb://weshow-service-other
           predicates:
             - Path=/other/**
+        - id: auth_route
+          uri: lb://weshow-service-auth
+          predicates:
+            - Path=/auth/**

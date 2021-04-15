@@ -1,12 +1,14 @@
 package com.gqb.user.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.gqb.common.utils.JwtUtils;
 import com.gqb.common.utils.R;
 import com.gqb.user.entity.User;
 import com.gqb.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @program: WeShow
@@ -67,5 +69,24 @@ public class UserController {
             return R.ok();
         }
         return R.error();
+    }
+
+    @GetMapping("/getUserByUsername/{username}")
+    public R getUserByUsername(@PathVariable("username") String username){
+        User user = userService.getUserByUsername(username);
+        if(user!=null){
+            return R.ok().data("user",user);
+        }
+        return R.error().message("用户不存在");
+    }
+
+    @GetMapping("/getUserByPhone/{phone}")
+    public R getUserByPhone(@PathVariable("phone") String phone){
+        System.out.println("phone:"+phone);
+        User user = userService.getUserByPhone(phone);
+        if(user!=null){
+            return R.ok().data("user",user);
+        }
+        return R.error().message("用户不存在");
     }
 }

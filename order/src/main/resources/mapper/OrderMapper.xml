@@ -8,7 +8,6 @@
         <id column="order_sn" property="orderSn" jdbcType="CHAR"/>
         <id column="user_id" property="userId" jdbcType="BIGINT"/>
         <id column="show_id" property="showId" jdbcType="BIGINT"/>
-        <id column="id_number" property="idNumber" jdbcType="VARCHAR"/>
         <id column="ticket_id" property="ticketId" jdbcType="BIGINT"/>
         <id column="seat_no" property="seatNo" jdbcType="INTEGER"/>
         <id column="order_amount" property="orderAmount" jdbcType="DECIMAL"/>
@@ -22,8 +21,8 @@
 
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createOrder" parameterType="com.gqb.order.entity.Order" useGeneratedKeys="true" keyProperty="id">
-        insert into order_list(order_sn,user_id,show_id,id_number,ticket_id,order_amount)
-            values(#{orderSn},#{userId},#{showId},#{idNumber},#{ticketId},#{orderAmount});
+        insert into order_list(order_sn,user_id,show_id,ticket_id,order_amount)
+            values(#{orderSn},#{userId},#{showId},#{ticketId},#{orderAmount});
     </insert>
 
     <update id="updateSeatAndAmount" parameterType="com.gqb.order.entity.Order">
@@ -77,9 +76,6 @@
             </if>
             <if test="showId!=null">
                 show_id=#{showId},
-            </if>
-            <if test="idNumber!=null">
-                id_number=#{idNumber},
             </if>
             <if test="ticketId!=null">
                 ticket_id=#{ticketId},

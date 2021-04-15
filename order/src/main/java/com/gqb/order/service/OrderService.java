@@ -3,6 +3,8 @@ package com.gqb.order.service;
 import com.github.pagehelper.PageInfo;
 import com.gqb.order.entity.Order;
 import com.gqb.order.entity.OrderReturn;
+import com.gqb.order.entity.vo.ConfirmResponseVo;
+import com.gqb.order.entity.vo.ConfirmVo;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 
@@ -32,4 +34,8 @@ public interface OrderService {
     int updateOrderReturn(OrderReturn orderReturn);
     //查看退票list
     PageInfo<OrderReturn> getOrderReturnQuery(Integer page,Integer size,OrderReturn orderReturn);
+
+    ConfirmResponseVo orderConfirm(ConfirmVo confirmVo);
+
+    String getOrderToken(Long userId);
 }

@@ -3,6 +3,7 @@ package com.gqb.show.service;
 import com.github.pagehelper.PageInfo;
 import com.gqb.show.entity.Show;
 import com.gqb.show.entity.vo.CompleteShow;
+import com.gqb.show.entity.vo.PerfectShow;
 import com.gqb.show.entity.vo.QueryAllShow;
 import com.gqb.show.entity.vo.QueryShow;
 
@@ -43,5 +44,5 @@ public interface ShowService {
 
     PageInfo<Show> getShowByPageAndTime(int page, int size, Show show);
 
-    List<Show> getAllShowByQuery(QueryAllShow queryShow);
+    List<PerfectShow> getAllShowByQuery(QueryAllShow queryShow);
 }

@@ -15,6 +15,10 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  redis:
+    host: 159.75.112.187
+    port: 6379
+    password: 123456
 
 # oss
 aliyun:
@@ -24,6 +28,7 @@ aliyun:
       keyid: LTAI4FzgMnNfTAWeaQvHT74g
       keysecret: idQzIXBbu1GCWyiAKPd6llAydgJklO
       bucketname: weshow-bucket
+
 
 management:
   endpoints:

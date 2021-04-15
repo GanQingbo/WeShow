@@ -2,6 +2,7 @@ package com.gqb.user.service;
 
 import com.github.pagehelper.PageInfo;
 import com.gqb.user.entity.User;
+import com.gqb.user.entity.vo.UserLoginVo;
 
 /**
  * @program: WeShow
@@ -16,4 +17,8 @@ public interface UserService {
     int updateUser(User user);
     int deleteUserById(Long id);
     int updateStatus(Long id);
+    User getUserByUsername(String username);
+    User getUserByPhone(String phone);
+
+    User login(UserLoginVo userLoginVo);
 }

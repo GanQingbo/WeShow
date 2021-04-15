@@ -45,9 +45,9 @@
         <id column="show_poster" property="showPoster" jdbcType="VARCHAR"/>
         <id column="show_mobile" property="showMobile" jdbcType="VARCHAR"/>
         <id column="seat_type" property="seatType" jdbcType="VARCHAR"/>
-        <id column="seat_price" property="seatPrice" jdbcType="DECIMAL"/>
-        <id column="seat_number" property="seatNumber" jdbcType="INTEGER"/>
-        <id column="seat_surplus" property="seatSurplus" jdbcType="INTEGER"/>
+        <id column="MIN(ticket.seat_price)" property="seatPrice" jdbcType="DECIMAL"/>
+        <id column="SUM(ticket.seat_number)" property="seatNumber" jdbcType="INTEGER"/>
+        <id column="SUM(ticket.seat_surplus)" property="seatSurplus" jdbcType="INTEGER"/>
         <id column="sell_time" property="sellTime" jdbcType="TIMESTAMP"/>
         <id column="heat" property="heat" jdbcType="INTEGER"/>
     </resultMap>
@@ -59,7 +59,48 @@
 
     <!--列表显示，合并数据-->
     <select id="getAllShowByQuery" parameterType="com.gqb.show.entity.vo.QueryAllShow" resultMap="PerfectShowResultMap">
+        SELECT show_list.*,showtype.show_type,MIN(ticket.seat_price),SUM(ticket.seat_number),SUM(ticket.seat_surplus),ticket.sell_time,heat
+        FROM show_list,showtype,show_heat,ticket
+        WHERE showtype.id = show_list.showtype_id
+        AND show_list.id=ticket.show_id
+        AND show_list.id=show_heat.show_id
+        <choose>
+            <when test="showType=='全部演出'">
 
+            </when>
+            <otherwise>
+                AND show_type= #{showType}
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="showCity=='全国'">
+
+            </when>
+            <otherwise>
+                AND show_city like "%"#{showCity}"%"
+            </otherwise>
+        </choose>
+        <if test="showTime==0">
+            AND show_time > now()
+        </if>
+        <if test="showTime==7">
+            AND show_time > now()
+            AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) >= date(show_time)
+        </if>
+        <if test="showTime==30">
+            AND show_time > now()
+            AND DATE_ADD(CURDATE(), INTERVAL 1 MONTH ) >= date(show_time)
+        </if>
+        GROUP BY show_list.id
+        <if test="showOrder==0">
+            ORDER BY show_time
+        </if>
+        <if test="showOrder==1">
+            ORDER BY heat DESC
+        </if>
+        <if test="showOrder==2">
+            ORDER BY MIN(ticket.seat_price)
+        </if>
     </select>
 
     <!--不合并-->

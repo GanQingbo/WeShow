@@ -1,23 +1,32 @@
 package com.gqb.stock.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.gqb.stock.dao.TicketDao;
 import com.gqb.stock.dao.TicketReturnDao;
 import com.gqb.stock.entity.Ticket;
+import com.gqb.stock.entity.vo.TicketLockVo;
 import com.gqb.stock.entity.vo.TicketQuery;
 import com.gqb.stock.service.TicketService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author GanQingbo
@@ -34,8 +43,15 @@ public class TicketServiceImpl implements TicketService {
     @Resource
     private TicketReturnDao returnDao;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
     /**
      * 分页带查询结果
+     *
      * @param page
      * @param size
      * @param ticketQuery
@@ -45,10 +61,16 @@ public class TicketServiceImpl implements TicketService {
     public PageInfo<TicketQuery> getTicketByPage(int page, int size, TicketQuery ticketQuery) {
         PageHelper.startPage(page, size);
         List<TicketQuery> ticketByQuery = ticketDao.getTicketByQuery(ticketQuery);
-        PageInfo<TicketQuery> info= new PageInfo<>(ticketByQuery);
+        PageInfo<TicketQuery> info = new PageInfo<>(ticketByQuery);
         return info;
     }
 
+    /**
+     * 库存加载到Redis中
+     *
+     * @param ticket
+     * @return
+     */
     @Override
     public int createTicket(Ticket ticket) {
         //初始化余票数等于总票数
@@ -56,10 +78,11 @@ public class TicketServiceImpl implements TicketService {
         int i = ticketDao.createTicket(ticket);
         if (i > 0) {
             //初始化redis库存
-            Jedis jedis = new Jedis("159.75.112.187", 6379);
-            jedis.auth("123456");
-            String stockKey = "SecKill:" + "stock:" + ticket.getId();
-            jedis.set(stockKey, String.valueOf(ticket.getSeatNumber()));
+//            Jedis jedis = new Jedis("159.75.112.187", 6379);
+//            jedis.auth("123456");
+//            jedis.set(stockKey, String.valueOf(ticket.getSeatNumber()));
+            String stockKey = "Ticket:" + "stock:" + ticket.getId();
+            redisTemplate.opsForValue().set(stockKey, String.valueOf(ticket.getSeatNumber()));
             log.info("=====>redis库存加载完成");
         }
         return i;
@@ -166,7 +189,6 @@ public class TicketServiceImpl implements TicketService {
     }
 
 
-
     @Override
     public int getTicketNumber(Long id) {
         int num = ticketDao.getTicketNumber(id);
@@ -175,7 +197,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public int updateTicket(Ticket ticket) {
-        if(ticket.getSeatNumber()<ticket.getSeatSurplus()){
+        if (ticket.getSeatNumber() < ticket.getSeatSurplus()) {
             //数据不正确
             return -1;
         }
@@ -219,9 +241,93 @@ public class TicketServiceImpl implements TicketService {
         return price;
     }
 
+    /**
+     * 从Redis中获取库存数量
+     *
+     * @param id
+     * @return
+     */
     @Override
     public int getSurplus(Long id) {
-        Integer surplus = ticketDao.getSurplus(id);
+        String uuid = UUID.randomUUID().toString();
+        //锁60s
+        Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent("TicketStockLock", uuid, 60, TimeUnit.SECONDS);
+        Integer surplus = 0;
+        if (lock) {
+            //加锁成功
+            log.info("=====Ticket库存加锁，UUID：" + uuid);
+            try {
+                String stockKey = "Ticket:" + "stock:" + id;
+                String s = stringRedisTemplate.opsForValue().get(stockKey);
+                if (StringUtils.isEmpty(s)) {
+                    //读DB
+                    surplus = ticketDao.getSurplus(id);
+                    log.info("=====Ticket库存缓存没命中，从DB获取数量为：" + surplus);
+                    //放进Redis
+                    stringRedisTemplate.opsForValue().set(stockKey, surplus.toString());
+                    return surplus;
+                }else{
+                    //不空才赋值
+                    surplus=Integer.valueOf(s);
+                }
+            } finally {
+                //释放锁
+                if (uuid.equals(stringRedisTemplate.opsForValue().get("TicketStockLock"))) {
+                    stringRedisTemplate.delete("TicketStockLock");
+                    log.info("=====Ticket库存解锁，UUID：" + uuid);
+                }
+            }
+        } else {
+            //加锁失败，利用自旋机制重试
+            log.info("=====TicketStockLock获得锁失败，正在自旋");
+            try {
+                Thread.sleep(300);
+            } catch (Exception e) {
+
+            }
+        }
         return surplus;
+    }
+
+    /**
+     * 计算距离开售时间
+     * @param id
+     * @return 秒
+     */
+    @Override
+    public long getSellTimeDistance(Long id) {
+        Ticket ticket = ticketDao.getTicketById(id);
+        Date sellTime=ticket.getSellTime();
+        Date now=new Date();
+        long diff=sellTime.getTime()-now.getTime();
+        return diff;
+    }
+
+    @Override
+    public long getShowIdByTicketId(Long id) {
+        Long showIdByTicketId = ticketDao.getShowIdByTicketId(id);
+        return showIdByTicketId;
+    }
+
+    /**
+     * 锁定库存
+     * @param ticketLockVo
+     * @return
+     */
+    @Transactional
+    @Override
+    public int ticketLocket(TicketLockVo ticketLockVo) throws Exception {
+        Integer surplus = ticketDao.getSurplus(ticketLockVo.getId());
+        log.info("TicketId:"+ticketLockVo.getId()+"的库存："+surplus);
+        if(surplus<=0){
+            log.info("TicketId:"+ticketLockVo.getId()+"库存不足");
+            throw new RuntimeException("TicketId:"+ticketLockVo.getId()+"库存不足");
+        }
+        int i = ticketDao.updateTicketLocked(ticketLockVo);
+        if(i==0){
+            //锁库存失败
+            throw new RuntimeException("TicketId:"+ticketLockVo.getId()+"库存不足");
+        }
+        return i;
     }
 }

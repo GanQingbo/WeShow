@@ -29,10 +29,6 @@ public class Order implements Serializable {
      */
     private Long showId;
     /**
-     * 身份证号
-     */
-    private String idNumber;
-    /**
      * 售票id
      */
     private Long ticketId;
@@ -101,13 +97,6 @@ public class Order implements Serializable {
         this.showId = showId;
     }
 
-    public String getIdNumber() {
-        return idNumber;
-    }
-
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
-    }
 
     public Long getTicketId() {
         return ticketId;
@@ -184,12 +173,11 @@ public class Order implements Serializable {
     public Order() {
     }
 
-    public Order(Long id, String orderSn, Long userId, Long showId, String idNumber, Long ticketId, Integer seatNo, BigDecimal orderAmount, Byte orderStatus, Byte deleteStatus, Date createTime, Date updateTime, Date paymentTime, Byte paymentType) {
+    public Order(Long id, String orderSn, Long userId, Long showId, Long ticketId, Integer seatNo, BigDecimal orderAmount, Byte orderStatus, Byte deleteStatus, Date createTime, Date updateTime, Date paymentTime, Byte paymentType) {
         this.id = id;
         this.orderSn = orderSn;
         this.userId = userId;
         this.showId = showId;
-        this.idNumber = idNumber;
         this.ticketId = ticketId;
         this.seatNo = seatNo;
         this.orderAmount = orderAmount;
@@ -208,7 +196,6 @@ public class Order implements Serializable {
                 ", orderSn='" + orderSn + '\'' +
                 ", userId=" + userId +
                 ", showId=" + showId +
-                ", idNumber='" + idNumber + '\'' +
                 ", ticketId=" + ticketId +
                 ", seatNo=" + seatNo +
                 ", orderAmount=" + orderAmount +

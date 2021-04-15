@@ -17,6 +17,7 @@
     <module>gateway</module>
     <module>other</module>
     <module>stock</module>
+      <module>auth</module>
   </modules>
 
 

@@ -84,4 +84,16 @@
     <select id="getStatus" parameterType="Long" resultType="Byte">
         select status from `user` where id=#{id}
     </select>
+
+    <select id="getUserByUsername" parameterType="String" resultMap="BaseResultMap">
+        select * from `user` where username=#{username}
+    </select>
+
+    <select id="getUserByPhone" parameterType="String" resultMap="BaseResultMap">
+        select * from `user` where mobile=#{phone}
+    </select>
+
+    <select id="getUserByLogin" parameterType="String" resultMap="BaseResultMap">
+        select * from `user` where username=#{username} or mobile=#{username}
+    </select>
 </mapper>

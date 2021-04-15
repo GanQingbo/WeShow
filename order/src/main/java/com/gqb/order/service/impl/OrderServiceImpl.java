@@ -1,5 +1,7 @@
 package com.gqb.order.service.impl;
 
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.gqb.common.utils.R;
@@ -8,6 +10,9 @@ import com.gqb.order.dao.OrderDao;
 import com.gqb.order.dao.OrderReturnDao;
 import com.gqb.order.entity.Order;
 import com.gqb.order.entity.OrderReturn;
+import com.gqb.order.entity.vo.ConfirmResponseVo;
+import com.gqb.order.entity.vo.ConfirmVo;
+import com.gqb.order.entity.vo.TicketLockVo;
 import com.gqb.order.service.OrderService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +20,8 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
@@ -24,9 +31,11 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author GanQingbo
@@ -39,16 +48,22 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     @Resource
-    OrderDao orderDao;
+    private OrderDao orderDao;
 
     @Resource
-    StockClient stockClient;
+    private StockClient stockClient;
 
     @Resource
-    OrderReturnDao returnDao;
+    private OrderReturnDao returnDao;
 
     @Resource
-    RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    private ThreadLocal<ConfirmVo> confirmVoThreadLocal=new ThreadLocal<>();
+    private ThreadLocal<Order> orderThreadLocal=new ThreadLocal<>();
 
     /**
      * 发送创建请求到mq
@@ -360,5 +375,99 @@ public class OrderServiceImpl implements OrderService {
         List<OrderReturn> orderReturnQuery = returnDao.getOrderReturnQuery(orderReturn);
         PageInfo<OrderReturn> pageInfo = new PageInfo<>(orderReturnQuery);
         return pageInfo;
+    }
+
+    /**
+     * 订单确认,创建订单-验令牌-锁库存
+     */
+    @Transactional
+    @Override
+    public ConfirmResponseVo orderConfirm(ConfirmVo confirmVo) {
+        ConfirmResponseVo responseVo = new ConfirmResponseVo();
+        //ThreadLocal共享数据
+        confirmVoThreadLocal.set(confirmVo);
+        //1.验令牌
+        String orderToken = confirmVo.getToken();
+        String redisToken = stringRedisTemplate.opsForValue().get("Order:Token:" + confirmVo.getUserId());
+        log.info("=====RedisToken:" + redisToken);
+        //lua
+        String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+       /* if(orderToken!=null && orderToken.equals(redisToken)){
+            //验证通过
+
+        }else {
+            //验证失败
+        }*/
+        Long result = stringRedisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("Order:Token:" + confirmVo.getUserId()), orderToken);
+        if (result == 0L) {
+            log.info("=====OrderToken验证失败");
+            responseVo.setCode(1);
+            return responseVo;
+        } else {
+            log.info("=====OrderToken验证成功,生成订单中...");
+            //2.创建订单
+            long i = createOrderByConfirm();
+            if(i>0){
+                log.info("=====订单生成成功，锁定库存");
+                TicketLockVo ticketLockVo=new TicketLockVo();
+                ticketLockVo.setId(confirmVo.getTicketId());
+                ticketLockVo.setNumber(confirmVo.getNumber());
+                ticketLockVo.setOrderId(i);
+                //3.远程调用锁库存，消息队列自动解锁
+                R r = stockClient.ticketLocked(ticketLockVo);
+                if(r.getSuccess()==true){
+                    //状态码为0是成功
+                    responseVo.setCode(0);
+                    responseVo.setOrder(orderThreadLocal.get());
+                    return responseVo;
+                }else {
+                    //锁库存失败
+                    responseVo.setCode(2);
+                    return responseVo;
+                }
+            }
+            //订单创建失败
+            responseVo.setCode(3);
+            return responseVo;
+        }
+    }
+
+    @Transactional
+    public Long createOrderByConfirm(){
+        ConfirmVo confirmVo=confirmVoThreadLocal.get();
+        Order order = new Order();
+        //snowflake生成唯一订单号
+        Snowflake snowflake = IdUtil.getSnowflake(1, 1);
+        Long orderSn = snowflake.nextId();
+        order.setOrderSn(orderSn.toString());
+        log.info("=====订单号：" + orderSn);
+        order.setUserId(confirmVo.getUserId());
+        R showIdByTicketId = stockClient.getShowIdByTicketId(confirmVo.getTicketId());
+        Object showId = showIdByTicketId.getData().get("showId");
+        Long longShowId=Long.valueOf(showId.toString());
+        log.info("=====演出号：" + longShowId);
+        order.setShowId(longShowId);
+        log.info("=====售票号：" + confirmVo.getTicketId());
+        order.setTicketId(confirmVo.getTicketId());
+        order.setOrderAmount(confirmVo.getAmount());
+        int isSuccess = orderDao.createOrder(order);
+        if(isSuccess>0){
+            orderThreadLocal.set(order);
+            return orderSn;
+        }
+        return 0L;
+    }
+
+    /**
+     * 获取订单唯一token，30分钟超时
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public String getOrderToken(Long userId) {
+        String token = UUID.randomUUID().toString().replace("-", "");
+        stringRedisTemplate.opsForValue().set("Order:Token:" + userId, token, 30, TimeUnit.MINUTES);
+        return token;
     }
 }

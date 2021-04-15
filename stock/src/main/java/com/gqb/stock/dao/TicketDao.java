@@ -1,6 +1,7 @@
 package com.gqb.stock.dao;
 
 import com.gqb.stock.entity.Ticket;
+import com.gqb.stock.entity.vo.TicketLockVo;
 import com.gqb.stock.entity.vo.TicketQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -51,4 +52,8 @@ public interface TicketDao {
     List<TicketQuery> getTicketByQuery(TicketQuery ticketQuery);
 
     TicketQuery getTicketQueryById(@Param("id") Long id);
+
+    Long getShowIdByTicketId(@Param("id") Long id);
+
+    int updateTicketLocked(TicketLockVo ticketLockVo);
 }

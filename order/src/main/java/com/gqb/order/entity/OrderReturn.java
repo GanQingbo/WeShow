@@ -21,6 +21,7 @@ public class OrderReturn implements Serializable {
      * 退票状态，0待处理，1已退票，2已拒绝
      */
     private Byte returnStatus;
+
     private BigDecimal returnMoney;
 
     public Long getId() {
