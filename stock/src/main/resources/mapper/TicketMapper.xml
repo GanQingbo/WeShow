@@ -125,6 +125,11 @@
         and seat_surplus > seat_locked + #{number}
     </update>
 
+    <update id="updateTicketUnLocked" parameterType="com.gqb.stock.entity.vo.TicketLockVo">
+        update ticket set seat_locked = seat_locked - #{number},seat_surplus = seat_surplus - #{number}
+        where id=#{id}
+    </update>
+
     <update id="updateTicket" parameterType="com.gqb.stock.entity.Ticket">
         update ticket
         <set>

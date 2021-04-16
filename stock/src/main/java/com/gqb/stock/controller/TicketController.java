@@ -168,4 +168,12 @@ public class TicketController {
         return R.ok().message("库存上锁失败");
     }
 
+    @PostMapping("/ticketUnlocking")
+    public R ticketUnlocking(@RequestBody TicketLockVo ticketLockVo){
+        int i = ticketService.ticketUnLocket(ticketLockVo);
+        if(i>0){
+            return R.ok().message("库存扣减成功");
+        }
+        return R.error().message("库存扣减出错");
+    }
 }

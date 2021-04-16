@@ -16,6 +16,7 @@ import com.gqb.order.entity.vo.TicketLockVo;
 import com.gqb.order.service.OrderService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -30,6 +31,7 @@ import redis.clients.jedis.Transaction;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -469,5 +471,42 @@ public class OrderServiceImpl implements OrderService {
         String token = UUID.randomUUID().toString().replace("-", "");
         stringRedisTemplate.opsForValue().set("Order:Token:" + userId, token, 30, TimeUnit.MINUTES);
         return token;
+    }
+
+    /**
+     * 订单支付成功，修改订单-库存解锁
+     * @param
+     * @return
+     */
+    @Transactional
+    @Override
+    public int orderPaySuccess(TicketLockVo ticketLockVo) {
+        Order order=new Order();
+        order.setId(ticketLockVo.getOrderId());
+        //更新订单支付状态
+        order.setOrderStatus((byte)1);
+        //支付时间
+        Date date=new Date();
+        Timestamp paymentTime=new Timestamp(date.getTime());
+        order.setPaymentTime(paymentTime);
+        order.setPaymentType((byte)1);
+
+        int i = orderDao.updateOrder(order);
+        //生成购买记录（待开发）
+        //扣库存
+        R r = stockClient.ticketUnlocking(ticketLockVo);
+        if(i==0){
+            log.info("=====订单状态更新失败，OrderId："+order.getId());
+            return 1;
+        }
+        if(r.getSuccess()==false){
+            log.info("=====远程扣减库存失败");
+            return 2;
+        }
+        if(i>0 && r.getSuccess()==true){
+            log.info("=====订单状态更新成功");
+            return 0;
+        }
+        return -1;
     }
 }

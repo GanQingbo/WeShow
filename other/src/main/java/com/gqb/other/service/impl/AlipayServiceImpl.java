@@ -25,11 +25,11 @@ public class AlipayServiceImpl implements AlipayService {
     public String alipay(Order order) {
         Factory.setOptions(AlipayConfig.getOptions());
         try{
-            System.out.println("amout:"+order.getOrderAmount());
+            System.out.println("Amount:"+order.getOrderAmount());
             AlipayTradeWapPayResponse response= Factory.Payment.Wap().pay(order.getOrderSn(),
                     order.getId().toString(),
                     order.getOrderAmount().toString(),
-                    "",
+                    AlipayConfig.return_url,
                     AlipayConfig.return_url);
             if (ResponseChecker.success(response)) {
                 System.out.println("调用支付成功");

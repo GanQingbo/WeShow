@@ -23,19 +23,27 @@ public interface StockClient {
     //出票
     @PostMapping("/ticket/sellTicket/{id}")
     R sellTicket(@PathVariable(value = "id") Long id);
+
     //获取票的信息
     @GetMapping("/ticket/getTicketById/{id}")
     R getTicketById(@PathVariable(value = "id") Long id);
+
     //票的价格
     @GetMapping("/ticket/getPriceById/{id}")
     BigDecimal getPriceById(@PathVariable(value = "id") Long id);
+
     //剩余票数
     @GetMapping("/ticket/getSurplusById/{id}")
     Integer getSurplusById(@PathVariable(value = "id") Long id);
+
     //获取演出id
     @GetMapping("/ticket/getShowId/{id}")
     R getShowIdByTicketId(@PathVariable("id") Long id);
+
     //锁定库存
     @PostMapping("/ticket/ticketLocked")
-    public R ticketLocked(@RequestBody TicketLockVo ticketLockVo);
+    R ticketLocked(@RequestBody TicketLockVo ticketLockVo);
+
+    @PostMapping("/ticket/ticketUnlocking")
+    R ticketUnlocking(@RequestBody TicketLockVo ticketLockVo);
 }

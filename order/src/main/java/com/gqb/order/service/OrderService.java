@@ -5,6 +5,7 @@ import com.gqb.order.entity.Order;
 import com.gqb.order.entity.OrderReturn;
 import com.gqb.order.entity.vo.ConfirmResponseVo;
 import com.gqb.order.entity.vo.ConfirmVo;
+import com.gqb.order.entity.vo.TicketLockVo;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 
@@ -38,4 +39,6 @@ public interface OrderService {
     ConfirmResponseVo orderConfirm(ConfirmVo confirmVo);
 
     String getOrderToken(Long userId);
+
+    int orderPaySuccess(TicketLockVo ticketLockVo);
 }

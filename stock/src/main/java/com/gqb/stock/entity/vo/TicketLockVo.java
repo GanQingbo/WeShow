@@ -12,7 +12,7 @@ public class TicketLockVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
-     * ticketId
+     * ticket Id
      */
     private Long id;
     /**

@@ -5,6 +5,7 @@ import com.gqb.common.utils.R;
 import com.gqb.order.entity.Order;
 import com.gqb.order.entity.vo.ConfirmResponseVo;
 import com.gqb.order.entity.vo.ConfirmVo;
+import com.gqb.order.entity.vo.TicketLockVo;
 import com.gqb.order.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,6 +106,11 @@ public class OrderController {
         return R.ok().data("token", orderToken);
     }
 
+    /**
+     * 提交订单
+     * @param confirmVo
+     * @return
+     */
     @PostMapping("/submitOrder")
     public R submitOrder(@RequestBody ConfirmVo confirmVo) {
         ConfirmResponseVo vo = orderService.orderConfirm(confirmVo);
@@ -119,6 +125,25 @@ public class OrderController {
                 return R.error().message("订单创建失败");
             default:
                 return R.error().message("未知错误");
+        }
+    }
+
+    /**
+     * 支付成功后修改订单
+     * @param ticketLockVo
+     * @return
+     */
+    @PostMapping("/paySuccess")
+    public R paySuccess(@RequestBody TicketLockVo ticketLockVo){
+        int i = orderService.orderPaySuccess(ticketLockVo);
+        if(i==0){
+            return R.ok();
+        }else if(i==1){
+            return R.error().message("订单状态更新失败");
+        }else if(i==2){
+            return R.error().message("远程扣减库存失败");
+        }else {
+            return R.error().message("不可预料的错误");
         }
     }
 

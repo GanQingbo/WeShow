@@ -56,4 +56,6 @@ public interface TicketDao {
     Long getShowIdByTicketId(@Param("id") Long id);
 
     int updateTicketLocked(TicketLockVo ticketLockVo);
+
+    int updateTicketUnLocked(TicketLockVo ticketLockVo);
 }
