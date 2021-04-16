@@ -10,6 +10,7 @@ import com.gqb.order.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -145,6 +146,15 @@ public class OrderController {
         }else {
             return R.error().message("不可预料的错误");
         }
+    }
+
+    /**
+     * 根据用户id获取演出
+     */
+    @GetMapping("/getShowsByUserId/{id}")
+    public R getShowsByUserId(@PathVariable("id") Long id){
+        List<Long> showsByUser = orderService.getShowsByUser(id);
+        return R.ok().data("showId",showsByUser);
     }
 
 }

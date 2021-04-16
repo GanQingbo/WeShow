@@ -1,7 +1,11 @@
 package com.gqb.show.service.Impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.client.utils.JSONUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.gqb.common.utils.R;
 import com.gqb.show.dao.ShowDao;
 import com.gqb.show.dao.ShowHeatDao;
 import com.gqb.show.entity.Show;
@@ -9,6 +13,7 @@ import com.gqb.show.entity.vo.CompleteShow;
 import com.gqb.show.entity.vo.PerfectShow;
 import com.gqb.show.entity.vo.QueryAllShow;
 import com.gqb.show.entity.vo.QueryShow;
+import com.gqb.show.feign.OrderFeign;
 import com.gqb.show.service.ShowService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +36,9 @@ public class ShowServiceImpl implements ShowService {
 
     @Resource
     private ShowHeatDao showHeatDao;
+
+    @Resource
+    private OrderFeign orderFeign;
 
     /***
     *@Description 获取全部表演信息
@@ -160,4 +168,21 @@ public class ShowServiceImpl implements ShowService {
         return showDao.updateShow(show);
     }
 
+    /**
+     * 远程调用获得showId,再查库
+     * @param id
+     * @return
+     */
+    @Override
+    public List<Show> getShowByUser(Long id) {
+        R r = orderFeign.getShowsByUserId(id);
+        String ids = r.getData().get("showId").toString();
+        List<Long> showIds = JSON.parseArray(ids, Long.class);
+        List<Show> shows=new ArrayList<>();
+        for(Long showId:showIds){
+            Show showById = showDao.getShowById(showId);
+            shows.add(showById);
+        }
+        return shows;
+    }
 }

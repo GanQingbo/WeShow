@@ -148,4 +148,13 @@ public class ShowController {
         }
         return R.error();
     }
+
+    @GetMapping("/getShowsByUser/{id}")
+    public R getShowsByUser(@PathVariable("id") Long id){
+        List<Show> show = showService.getShowByUser(id);
+        if(show!=null && show.size()!=0){
+            return R.ok().data("show",show);
+        }
+        return R.error().message("获取票夹失败");
+    }
 }

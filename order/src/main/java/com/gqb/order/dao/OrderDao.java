@@ -16,12 +16,20 @@ import java.util.List;
 @Mapper
 public interface OrderDao {
     int createOrder(Order order);
+
     int updateSeatAndAmount(Order order);
+
     List<Order> getAllOrders();
+
     List<Order> getOrderQuery(Order order);
+
     Order getOrderById(@Param("id") Long id);
+
     int updateOrder(Order order);
+
     int deleteOrder(@Param("id") Long id);
+
     int updateOrderDeleteStatus(Order order);
 
+    List<Order> getOrderByUserId(@Param("id") Long id);
 }

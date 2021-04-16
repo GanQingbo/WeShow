@@ -45,4 +45,6 @@ public interface ShowService {
     PageInfo<Show> getShowByPageAndTime(int page, int size, Show show);
 
     List<PerfectShow> getAllShowByQuery(QueryAllShow queryShow);
+
+    List<Show> getShowByUser(Long id);
 }

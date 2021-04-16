@@ -1,5 +1,8 @@
 package com.gqb.show;
 
+import com.alibaba.fastjson.JSON;
+import com.gqb.common.utils.R;
+import com.gqb.show.feign.OrderFeign;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +11,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -21,6 +25,8 @@ import java.util.UUID;
 public class MyShowTest {
     @Resource
     StringRedisTemplate stringRedisTemplate;
+    @Resource
+    OrderFeign orderFeign;
 
     @Test
     public void testRedisTemplate(){
@@ -29,4 +35,15 @@ public class MyShowTest {
         String s = ops.get("hello");
         System.out.println("s:"+s);
     }
+
+    @Test
+    public void testJosn(){
+        R r = orderFeign.getShowsByUserId(26L);
+        String ids = r.getData().get("showId").toString();
+        System.out.println(ids);
+        List<Long> longs = JSON.parseArray(ids, Long.class);
+        System.out.println(longs);
+
+    }
+
 }

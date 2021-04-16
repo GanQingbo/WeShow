@@ -41,4 +41,8 @@ public interface OrderService {
     String getOrderToken(Long userId);
 
     int orderPaySuccess(TicketLockVo ticketLockVo);
+
+    List<Order> getOrderByUserId(Long id);
+
+    List<Long> getShowsByUser(Long id);
 }

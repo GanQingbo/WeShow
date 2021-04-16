@@ -33,10 +33,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -508,5 +505,28 @@ public class OrderServiceImpl implements OrderService {
             return 0;
         }
         return -1;
+    }
+
+
+    @Override
+    public List<Order> getOrderByUserId(Long id) {
+        List<Order> orderByUserId = orderDao.getOrderByUserId(id);
+        return orderByUserId;
+    }
+
+    /**
+     * 根据用户id获取演出id列表
+     * @param id
+     * @return
+     */
+    @Override
+    public List<Long> getShowsByUser(Long id) {
+        List<Long> showsId=new ArrayList<>();
+        List<Order> orders = getOrderByUserId(id);
+        for(Order order:orders){
+            //遍历order取出showId
+            showsId.add(order.getShowId());
+        }
+        return showsId;
     }
 }

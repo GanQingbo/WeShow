@@ -61,6 +61,10 @@
         select * from order_list where id=#{id}
     </select>
 
+    <select id="getOrderByUserId" parameterType="Long" resultMap="BaseResultMap">
+        select * from order_list where user_id=#{id}
+    </select>
+
     <delete id="deleteOrder" parameterType="Long">
         delete from order_list where id =#{id};
     </delete>
