@@ -12,6 +12,7 @@ import com.gqb.order.entity.Order;
 import com.gqb.order.entity.OrderReturn;
 import com.gqb.order.entity.vo.ConfirmResponseVo;
 import com.gqb.order.entity.vo.ConfirmVo;
+import com.gqb.order.entity.vo.OrderVo;
 import com.gqb.order.entity.vo.TicketLockVo;
 import com.gqb.order.service.OrderService;
 import com.rabbitmq.client.Channel;
@@ -183,7 +184,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    @RabbitListener(queues = {"order-create-queue"})
+    //@RabbitListener(queues = {"order-create-queue"})
     public void secKillByMessage(Message message, Order order, Channel channel) {
         //接收消息
         byte[] body = message.getBody();
@@ -508,10 +509,26 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+    /**
+     * 根据用户id获取订单信息
+     * @param id
+     * @return
+     */
     @Override
     public List<Order> getOrderByUserId(Long id) {
         List<Order> orderByUserId = orderDao.getOrderByUserId(id);
         return orderByUserId;
+    }
+
+    /**
+     * 根据用户id获取完整的订单信息
+     * @param id
+     * @return
+     */
+    @Override
+    public List<OrderVo> getOrderVoByUserId(Long id) {
+        List<OrderVo> orderVoByUserId = orderDao.getOrderVoByUserId(id);
+        return orderVoByUserId;
     }
 
     /**
@@ -528,5 +545,16 @@ public class OrderServiceImpl implements OrderService {
             showsId.add(order.getShowId());
         }
         return showsId;
+    }
+
+    /**
+     * 修改订单状态
+     * @param order
+     * @return
+     */
+    @Override
+    public int setOrderStatus(Order order) {
+        int i = orderDao.setOrderStatus(order);
+        return i;
     }
 }

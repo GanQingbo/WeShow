@@ -1,6 +1,6 @@
 package com.gqb.stock.config;
 
-import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author GanQingbo
@@ -25,6 +27,42 @@ public class MyRabbitConfig {
     @Bean
     public MessageConverter messageConverter(){
         return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean
+    public Exchange stockEventExchange(){
+        TopicExchange exchange = new TopicExchange("stock-event-exchange",true,false);
+        return exchange;
+    }
+
+    @Bean
+    public Queue stockReleaseQueue(){
+        return new Queue("stock.release.queue",true,false,false,null);
+    }
+
+    @Bean
+    public Queue stockDelayQueue(){
+        Map<String,Object> args=new HashMap<>();
+        args.put("x-dead-letter-exchange","stock-event-exchange");
+        args.put("x-dead-letter-routing-key","stock.release");
+        args.put("x-message-ttl",60000);
+        return new Queue("stock.delay.queue",true,false,false,args);
+    }
+
+    @Bean
+    public Binding stockReleaseBinding(){
+        Binding binding = new Binding("stock.release.queue", Binding.DestinationType.QUEUE, "stock-event-exchange", "stock.release.#", null);
+        return binding;
+    }
+
+    /**
+     * 消息发送到这个队列里去
+     * @return
+     */
+    @Bean
+    public Binding stockLockedBinding(){
+        Binding binding = new Binding("stock.delay.queue", Binding.DestinationType.QUEUE, "stock-event-exchange", "stock.locked.#", null);
+        return binding;
     }
 
     /**

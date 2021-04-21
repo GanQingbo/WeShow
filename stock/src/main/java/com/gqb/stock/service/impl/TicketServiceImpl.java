@@ -1,19 +1,25 @@
 package com.gqb.stock.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.gqb.common.utils.R;
 import com.gqb.stock.dao.TicketDao;
 import com.gqb.stock.dao.TicketReturnDao;
 import com.gqb.stock.entity.Ticket;
+import com.gqb.stock.entity.vo.Order;
 import com.gqb.stock.entity.vo.TicketLockVo;
 import com.gqb.stock.entity.vo.TicketQuery;
+import com.gqb.stock.feign.OrderFeign;
 import com.gqb.stock.service.TicketService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -48,6 +54,12 @@ public class TicketServiceImpl implements TicketService {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private OrderFeign orderFeign;
 
     /**
      * 分页带查询结果
@@ -133,7 +145,7 @@ public class TicketServiceImpl implements TicketService {
      * @param id
      * @return
      */
-    @RabbitListener(queues = {"stock-update-queue"})
+    //@RabbitListener(queues = {"stock-update-queue"})
     public void secKillTicket(Message message, Long id, Channel channel) {
         log.info("Stock=====>收到扣减库存的消息");
         //channel内自增的tag
@@ -312,6 +324,7 @@ public class TicketServiceImpl implements TicketService {
 
     /**
      * 锁定库存
+     * 库存解锁：过期订单未支付，用户主动关闭订单
      *
      * @param ticketLockVo
      * @return
@@ -330,7 +343,55 @@ public class TicketServiceImpl implements TicketService {
             //锁库存失败
             throw new RuntimeException("TicketId:" + ticketLockVo.getId() + "库存不足");
         }
+        //库存锁定成功，发送消息
+        rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", ticketLockVo, new CorrelationData(UUID.randomUUID().toString()));
+        log.info("=====库存锁定成功，消息发送成功，订单id是" + ticketLockVo.getOrderId());
         return i;
+    }
+
+    /**
+     * 解锁库存
+     * 1. 订单过期未支付
+     * 2. 用户主动取消
+     */
+    @RabbitListener(queues = "stock.release.queue")
+    public void stockAutoLocket(Message message, TicketLockVo ticketLockVo, Channel channel) {
+        log.info("Stock=====>收到订单关闭的消息");
+        //channel内自增的tag
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        //1.先查询订单状态，15分钟还未支付的关闭订单
+        R r = orderFeign.getOrderById(ticketLockVo.getOrderId());
+        Object data = r.getData().get("order");
+        String json = JSONObject.toJSON(data).toString();
+        Order order = JSON.parseObject(json, Order.class);
+        try {
+            if (order.getOrderStatus() == (byte) 0) {
+                //未支付的订单
+                //2.解锁库存，更新redis票数
+                int i = ticketUnLocket(ticketLockVo);
+                //3.修改订单状态为已关闭 2
+                if (i > 0) {
+                    order.setOrderStatus((byte) 2);
+                    //更新订单状态
+                    R r1 = orderFeign.setOrderStatus(order);
+                    if (r1.getSuccess() == true) {
+                        log.info("=====超时订单关闭成功，订单id："+order.getId());
+                        channel.basicAck(deliveryTag, false);
+                    }else {
+                        //直接丢弃
+                        channel.basicNack(deliveryTag,false,false);
+                    }
+                }else {
+                    log.info("=====超时订单库存解锁失败");
+                    //重新放入队列
+                    channel.basicNack(deliveryTag,false,true);
+                }
+            }
+            //不是待支付的订单也处理
+            channel.basicAck(deliveryTag, false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**

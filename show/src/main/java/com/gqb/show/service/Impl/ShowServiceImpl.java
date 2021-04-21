@@ -119,9 +119,17 @@ public class ShowServiceImpl implements ShowService {
         return showByType;
     }
 
+    /**
+     * 获取演出
+     * @param id
+     * @return
+     */
     @Override
     public Show getShowById(Long id) {
         Show showById = showDao.getShowById(id);
+        if(showById!=null){ //点击数+1
+            showHeatDao.increaseClick(id);
+        }
         return showById;
     }
 
@@ -169,7 +177,7 @@ public class ShowServiceImpl implements ShowService {
     }
 
     /**
-     * 远程调用获得showId,再查库
+     * 远程调用获得showId,再查库 票夹
      * @param id
      * @return
      */
@@ -185,4 +193,6 @@ public class ShowServiceImpl implements ShowService {
         }
         return shows;
     }
+
+
 }

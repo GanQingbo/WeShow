@@ -47,4 +47,6 @@ public interface ShowService {
     List<PerfectShow> getAllShowByQuery(QueryAllShow queryShow);
 
     List<Show> getShowByUser(Long id);
+
+
 }

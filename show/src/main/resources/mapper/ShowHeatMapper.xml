@@ -14,4 +14,13 @@
         insert into show_heat(show_id)
         values(#{id})
     </insert>
+    <update id="increaseClick" parameterType="Long">
+        update show_heat set clicks=clicks+1 where show_id=#{id}
+    </update>
+    <update id="increaseLike" parameterType="Long">
+        update show_heat set likes=likes+1 where show_id=#{id}
+    </update>
+    <update id="decreaseLike" parameterType="Long">
+        update show_heat set likes=likes-1 where show_id=#{id}
+    </update>
 </mapper>

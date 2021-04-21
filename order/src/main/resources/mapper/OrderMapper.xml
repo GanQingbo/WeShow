@@ -19,6 +19,24 @@
         <id column="payment_type" property="paymentType" jdbcType="TINYINT"/>
     </resultMap>
 
+    <resultMap id="OrderVoResultMap" type="com.gqb.order.entity.vo.OrderVo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="order_sn" property="orderSn" jdbcType="CHAR"/>
+        <id column="user_id" property="userId" jdbcType="BIGINT"/>
+        <id column="show_id" property="showId" jdbcType="BIGINT"/>
+        <id column="ticket_id" property="ticketId" jdbcType="BIGINT"/>
+        <id column="show_name" property="showName" jdbcType="VARCHAR"/>
+        <id column="show_time" property="showTime" jdbcType="TIMESTAMP"/>
+        <id column="show_poster" property="showPoster" jdbcType="VARCHAR"/>
+        <id column="seat_type" property="seatType" jdbcType="VARCHAR"/>
+        <id column="order_amount" property="orderAmount" jdbcType="DECIMAL"/>
+        <id column="order_status" property="orderStatus" jdbcType="TINYINT"/>
+        <id column="delete_status" property="deleteStatus" jdbcType="TINYINT"/>
+        <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <id column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <id column="payment_time" property="paymentTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createOrder" parameterType="com.gqb.order.entity.Order" useGeneratedKeys="true" keyProperty="id">
         insert into order_list(order_sn,user_id,show_id,ticket_id,order_amount)
@@ -59,6 +77,17 @@
 
     <select id="getOrderById" parameterType="Long" resultMap="BaseResultMap">
         select * from order_list where id=#{id}
+    </select>
+
+    <select id="getOrderVoByUserId" parameterType="Long" resultMap="OrderVoResultMap">
+        select o.id,o.user_id,o.show_id,o.ticket_id,o.order_sn,s.show_name,
+        s.show_time,s.show_poster,ticket.seat_type,o.order_amount,o.order_status,
+        o.delete_status,o.create_time,o.update_time,o.payment_time
+        from show_list as s,ticket,order_list as o
+        where user_id=#{id}
+        and o.user_id=user_id
+        and o.show_id=s.id
+        and o.ticket_id=ticket.id
     </select>
 
     <select id="getOrderByUserId" parameterType="Long" resultMap="BaseResultMap">
@@ -110,7 +139,10 @@
     </update>
 
     <update id="updateOrderDeleteStatus" parameterType="com.gqb.order.entity.Order">
-        update order_list set delete_status = #{status} where id = #{id}
+        update order_list set delete_status = #{deleteStatus} where id = #{id}
     </update>
 
+    <update id="setOrderStatus" parameterType="com.gqb.order.entity.Order">
+        update order_list set order_status = #{orderStatus} where id = #{id}
+    </update>
 </mapper>

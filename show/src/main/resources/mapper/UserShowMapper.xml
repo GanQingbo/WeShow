@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.show.dao.ShowTypeDao">
+    <resultMap id="BaseResultMap" type="com.gqb.show.entity.Show">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="showtype_id" property="showTypeId" jdbcType="BIGINT"/>
+        <id column="show_name" property="showName" jdbcType="VARCHAR"/>
+        <id column="show_intro" property="showIntro" jdbcType="VARCHAR"/>
+        <id column="show_performer" property="showPerformer" jdbcType="VARCHAR"/>
+        <id column="show_city" property="showCity" jdbcType="VARCHAR"/>
+        <id column="show_place" property="showPlace" jdbcType="VARCHAR"/>
+        <id column="show_time" property="showTime" jdbcType="TIMESTAMP"/>
+        <id column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <id column="show_poster" property="showPoster" jdbcType="VARCHAR"/>
+        <id column="show_mobile" property="showMobile" jdbcType="VARCHAR"/>
+        <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
+    <insert id="userAddShow" parameterType="com.gqb.show.entity.UserShow" useGeneratedKeys="true" keyProperty="id">
+        insert into user_show(user_id,show_id) values(#{userId},#{showId});
+    </insert>
+    <delete id="userReduceShow" parameterType="com.gqb.show.entity.UserShow">
+        delete from user_show where user_id=#{userId} and show_id=#{showId}
+    </delete>
+    <select id="getUserShows" resultMap="BaseResultMap">
+        select * from show_list,user_show
+        where user_show.show_id = show_list.id and user_show.user_id=#{id}
+    </select>
+</mapper>

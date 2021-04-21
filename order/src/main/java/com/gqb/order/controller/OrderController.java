@@ -5,6 +5,7 @@ import com.gqb.common.utils.R;
 import com.gqb.order.entity.Order;
 import com.gqb.order.entity.vo.ConfirmResponseVo;
 import com.gqb.order.entity.vo.ConfirmVo;
+import com.gqb.order.entity.vo.OrderVo;
 import com.gqb.order.entity.vo.TicketLockVo;
 import com.gqb.order.service.OrderService;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +61,7 @@ public class OrderController {
         return R.ok().data("order", orderByPage);
     }
 
+    //根据订单的id获取订单信息
     @GetMapping("/getOrderById/{id}")
     public R getOrderById(@PathVariable("id") Long id) {
         Order orderById = orderService.getOrderById(id);
@@ -149,12 +151,33 @@ public class OrderController {
     }
 
     /**
-     * 根据用户id获取演出
+     * 根据用户id获取演出 票夹
      */
     @GetMapping("/getShowsByUserId/{id}")
     public R getShowsByUserId(@PathVariable("id") Long id){
         List<Long> showsByUser = orderService.getShowsByUser(id);
         return R.ok().data("showId",showsByUser);
+    }
+
+    /**
+     * 修改订单状态
+     * @param order
+     * @return
+     */
+    @PostMapping("/setOrderStatus")
+    public R setOrderStatus(@RequestBody Order order){
+        int i = orderService.setOrderStatus(order);
+        if(i>0){
+            return R.ok().message("修改订单状态成功");
+        }
+        return R.error().message("修改订单状态失败");
+    }
+
+    //根据用户id获取所有订单
+    @GetMapping("/getOrderVoByUserId/{id}")
+    public R getOrderByUserId(@PathVariable("id") Long id){
+        List<OrderVo> orderVoByUserId = orderService.getOrderVoByUserId(id);
+        return R.ok().data("order",orderVoByUserId);
     }
 
 }

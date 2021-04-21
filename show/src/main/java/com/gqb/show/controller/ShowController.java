@@ -3,11 +3,13 @@ package com.gqb.show.controller;
 import com.github.pagehelper.PageInfo;
 import com.gqb.common.utils.R;
 import com.gqb.show.entity.Show;
+import com.gqb.show.entity.UserShow;
 import com.gqb.show.entity.vo.CompleteShow;
 import com.gqb.show.entity.vo.PerfectShow;
 import com.gqb.show.entity.vo.QueryAllShow;
 import com.gqb.show.entity.vo.QueryShow;
 import com.gqb.show.service.ShowService;
+import com.gqb.show.service.UserShowService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,6 +26,9 @@ import java.util.List;
 public class ShowController {
     @Resource
     private ShowService showService;
+
+    @Resource
+    private UserShowService userShowService;
 
     @GetMapping("/getAllShow")
     public R getAllShow() {
@@ -156,5 +161,34 @@ public class ShowController {
             return R.ok().data("show",show);
         }
         return R.error().message("获取票夹失败");
+    }
+
+    /**
+     * 获取用户收藏的演出
+     * @param id
+     * @return
+     */
+    @GetMapping("/getUserLikes/{id}")
+    public R getUserLikes(@PathVariable("id") Long id){
+        List<Show> userShows = userShowService.getUserShows(id);
+        return R.ok().data("show",userShows);
+    }
+
+    @PostMapping("/userAddLike")
+    public R userAddLike(@RequestBody UserShow userShow){
+        int i = userShowService.userAddShow(userShow);
+        if(i>0){
+            return R.ok().message("添加收藏成功");
+        }
+        return R.error();
+    }
+
+    @PostMapping("/userReduceLike")
+    public R userReduceLike(@RequestBody UserShow userShow){
+        int i = userShowService.userReduceShow(userShow);
+        if(i>0){
+            return R.ok().message("移除收藏成功");
+        }
+        return R.error();
     }
 }

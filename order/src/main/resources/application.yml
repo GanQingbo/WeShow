@@ -21,7 +21,7 @@ spring:
     port: 6379
     password: 123456
   rabbitmq:
-    host: localhost
+    host: 159.75.112.187 #localhost
     port: 5672
     virtual-host: /
     publisher-returns: true #开启发送端抵达消息队列确认

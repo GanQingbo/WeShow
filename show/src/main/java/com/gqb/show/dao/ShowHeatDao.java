@@ -14,4 +14,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface ShowHeatDao {
     int createShowHeat(@Param("id")Long id);
+    int increaseClick(@Param("id") Long id);
+    int increaseLike(@Param("id") Long id);
+    int decreaseLike(@Param("id") Long id);
 }

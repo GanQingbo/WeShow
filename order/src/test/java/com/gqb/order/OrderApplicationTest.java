@@ -107,4 +107,24 @@ public class OrderApplicationTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void createOrderTest(){
+        Order order = new Order();
+        order.setOrderSn("1123233");
+        rabbitTemplate.convertAndSend("order-event-exchange","order.create",order);
+    }
+
+    //延时队列测试
+/*    @Test
+    @RabbitListener(queues = "order.release.queue")
+    public void list(Order order,Channel channel,Message message){
+        System.out.println("收到消息，准备关闭订单:"+order.getOrderSn());
+        try{
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }*/
 }

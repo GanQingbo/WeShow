@@ -2,6 +2,7 @@ package com.gqb.order.dao;
 
 import com.gqb.order.entity.Order;
 import com.gqb.order.entity.OrderReturn;
+import com.gqb.order.entity.vo.OrderVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,4 +33,8 @@ public interface OrderDao {
     int updateOrderDeleteStatus(Order order);
 
     List<Order> getOrderByUserId(@Param("id") Long id);
+
+    int setOrderStatus(Order order);
+
+    List<OrderVo> getOrderVoByUserId(@Param("id") Long id);
 }

@@ -32,4 +32,8 @@ public class MqController {
         rabbitTemplate.convertAndSend("weshow-createOrder","order.create",order,new CorrelationData(UUID.randomUUID().toString()));
         return R.ok();
     }
+
+    //test
+    //@GetMapping("/test/mq")
+
 }

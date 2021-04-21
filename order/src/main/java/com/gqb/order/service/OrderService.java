@@ -5,6 +5,7 @@ import com.gqb.order.entity.Order;
 import com.gqb.order.entity.OrderReturn;
 import com.gqb.order.entity.vo.ConfirmResponseVo;
 import com.gqb.order.entity.vo.ConfirmVo;
+import com.gqb.order.entity.vo.OrderVo;
 import com.gqb.order.entity.vo.TicketLockVo;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
@@ -45,4 +46,9 @@ public interface OrderService {
     List<Order> getOrderByUserId(Long id);
 
     List<Long> getShowsByUser(Long id);
+
+    int setOrderStatus(Order order);
+
+    List<OrderVo> getOrderVoByUserId(Long id);
+
 }
