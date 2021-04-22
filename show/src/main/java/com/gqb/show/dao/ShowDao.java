@@ -47,4 +47,6 @@ public interface ShowDao {
     List<PerfectShow> getAllShowByQuery(QueryAllShow queryShow);
 
     List<PerfectShow> getPerfectShow(QueryAllShow queryAllShow);
+
+    List<PerfectShow> getPerfectShowByKey(@Param("key") String key);
 }

@@ -15,4 +15,5 @@ public interface UserShowService {
     int userAddShow(UserShow userShow);
     int userReduceShow(UserShow userShow);
     List<Show> getUserShows(Long id);
+    boolean userIsLike(UserShow userShow);
 }

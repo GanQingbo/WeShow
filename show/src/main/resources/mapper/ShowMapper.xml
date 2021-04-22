@@ -106,7 +106,7 @@
     <!--不合并-->
     <select id="getPerfectShow" parameterType="com.gqb.show.entity.vo.QueryAllShow" resultMap="PerfectShowResultMap">
         select show_list.*,showtype.show_type,ticket.seat_type,ticket.seat_price,ticket.seat_number,ticket.seat_surplus,heat
-        from show_list,show_type,show_heat,ticket
+        from show_list,showtype,show_heat,ticket
         where showtype.id = show_list.showtype_id
         AND show_list.id=ticket.show_id
         AND show_list.id=show_heat.show_id
@@ -127,6 +127,21 @@
             AND show_time > now()
             AND DATE_ADD(CURDATE(), INTERVAL 1 MONTH ) >= date(show_time)
         </if>
+    </select>
+
+    <select id="getPerfectShowByKey" parameterType="String" resultMap="PerfectShowResultMap">
+        SELECT show_list.*,showtype.show_type,MIN(ticket.seat_price),SUM(ticket.seat_number),SUM(ticket.seat_surplus),ticket.sell_time,heat
+        FROM show_list,showtype,show_heat,ticket
+        WHERE showtype.id = show_list.showtype_id
+        AND show_list.id=ticket.show_id
+        AND show_list.id=show_heat.show_id
+        <if test="key != null and key !=''">
+            AND CONCAT(show_list.show_name) LIKE CONCAT('%',#{key},'%')
+            OR CONCAT(show_list.show_city) LIKE CONCAT('%',#{key},'%')
+            OR CONCAT(show_list.show_place) LIKE CONCAT('%',#{key},'%')
+            OR CONCAT(show_list.show_performer) LIKE CONCAT('%',#{key},'%')
+        </if>
+        GROUP BY show_list.id
     </select>
 
     <select id="getCompleteShow" parameterType="com.gqb.show.entity.vo.QueryShow" resultMap="CompleteResultMap">

@@ -557,4 +557,15 @@ public class OrderServiceImpl implements OrderService {
         int i = orderDao.setOrderStatus(order);
         return i;
     }
+
+    /**
+     * 根据订单id获取完整的vo
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderVo getOrderVoByOrderId(Long id) {
+        OrderVo orderVoByOrderId = orderDao.getOrderVoByOrderId(id);
+        return orderVoByOrderId;
+    }
 }

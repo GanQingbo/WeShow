@@ -23,4 +23,10 @@
     <update id="decreaseLike" parameterType="Long">
         update show_heat set likes=likes-1 where show_id=#{id}
     </update>
+    <select id="getHeatById" parameterType="Long" resultMap="ResultMap">
+        select * from show_heat where show_id = #{id}
+    </select>
+    <update id="updateHeat" parameterType="com.gqb.show.entity.ShowHeat">
+        update show_heat set heat = #{heat} where show_id = #{showId}
+    </update>
 </mapper>

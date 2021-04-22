@@ -48,5 +48,7 @@ public interface ShowService {
 
     List<Show> getShowByUser(Long id);
 
+    int updateShowHeat(Long id);
 
+    List<PerfectShow> getPerfectShowByKey(String key);
 }

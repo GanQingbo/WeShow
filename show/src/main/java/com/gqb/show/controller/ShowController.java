@@ -191,4 +191,20 @@ public class ShowController {
         }
         return R.error();
     }
+
+    @PostMapping("/userIsLike")
+    public R userIsLike(@RequestBody UserShow userShow){
+        boolean b = userShowService.userIsLike(userShow);
+        return R.ok().data("isLike",b);
+    }
+
+    @GetMapping("/getShowByKey/{key}")
+    public R getShowByKey(@PathVariable("key") String key){
+        List<PerfectShow> perfectShowByKey = showService.getPerfectShowByKey(key);
+        if(perfectShowByKey.size()!=0 && !perfectShowByKey.isEmpty()){
+            return R.ok().data("show",perfectShowByKey);
+        }
+        return R.error();
+    }
+
 }

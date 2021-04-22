@@ -17,4 +17,6 @@ public interface ShowHeatDao {
     int increaseClick(@Param("id") Long id);
     int increaseLike(@Param("id") Long id);
     int decreaseLike(@Param("id") Long id);
+    ShowHeat getHeatById(@Param("id") Long id);
+    int updateHeat(ShowHeat showHeat);
 }

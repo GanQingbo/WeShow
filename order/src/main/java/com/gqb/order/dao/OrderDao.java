@@ -37,4 +37,5 @@ public interface OrderDao {
     int setOrderStatus(Order order);
 
     List<OrderVo> getOrderVoByUserId(@Param("id") Long id);
+    OrderVo  getOrderVoByOrderId(@Param("id") Long id);
 }

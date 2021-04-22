@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.show.dao.ShowCommentDao">
+    <resultMap id="ResultMap" type="com.gqb.show.entity.vo.CommentVo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="show_id" property="showId" jdbcType="BIGINT"/>
+        <id column="user_id" property="userId" jdbcType="BIGINT"/>
+        <id column="comments" property="comments" jdbcType="VARCHAR"/>
+        <id column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <id column="header" property="header" jdbcType="VARCHAR"/>
+        <id column="show_name" property="showName" jdbcType="VARCHAR"/>
+        <id column="show_poster" property="showPoster" jdbcType="VARCHAR"/>
+        <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="getCommentByShow" parameterType="Long" resultMap="ResultMap">
+        select show_comment.*,user.nickname,user.header,show_list.show_name,show_list.show_poster from show_comment ,user,show_list
+        where show_id = #{id} and  user.id= show_comment.user_id and show_id=show_list.id
+        order by show_comment.create_time DESC
+    </select>
+
+    <select id="getCommentByUser" parameterType="Long" resultMap="ResultMap">
+        select show_comment.*,user.nickname,user.header,show_list.show_name,show_list.show_poster from show_comment ,user,show_list
+        where user.id = #{id} and  user.id= show_comment.user_id and show_id=show_list.id
+        order by show_comment.create_time DESC
+    </select>
+
+    <insert id="createComment" parameterType="com.gqb.show.entity.ShowComment" useGeneratedKeys="true" keyProperty="id">
+        insert into show_comment(show_id,user_id,comments)
+        values(#{showId},#{userId},#{comments})
+    </insert>
+
+    <delete id="deleteComment" parameterType="Long">
+        delete from show_comment where id = #{id}
+    </delete>
+</mapper>

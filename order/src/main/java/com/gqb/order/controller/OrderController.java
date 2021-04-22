@@ -180,4 +180,9 @@ public class OrderController {
         return R.ok().data("order",orderVoByUserId);
     }
 
+    @GetMapping("/getOrderVoByOrderId/{id}")
+    public R getOrderByOrderId(@PathVariable("id") Long id){
+        OrderVo order = orderService.getOrderVoByOrderId(id);
+        return R.ok().data("order",order);
+    }
 }

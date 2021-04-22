@@ -51,4 +51,5 @@ public interface OrderService {
 
     List<OrderVo> getOrderVoByUserId(Long id);
 
+    OrderVo getOrderVoByOrderId(Long id);
 }

@@ -9,6 +9,7 @@ import com.gqb.common.utils.R;
 import com.gqb.show.dao.ShowDao;
 import com.gqb.show.dao.ShowHeatDao;
 import com.gqb.show.entity.Show;
+import com.gqb.show.entity.ShowHeat;
 import com.gqb.show.entity.vo.CompleteShow;
 import com.gqb.show.entity.vo.PerfectShow;
 import com.gqb.show.entity.vo.QueryAllShow;
@@ -129,6 +130,7 @@ public class ShowServiceImpl implements ShowService {
         Show showById = showDao.getShowById(id);
         if(showById!=null){ //点击数+1
             showHeatDao.increaseClick(id);
+            updateShowHeat(id);
         }
         return showById;
     }
@@ -194,5 +196,25 @@ public class ShowServiceImpl implements ShowService {
         return shows;
     }
 
+    //更新演出热度
+    @Override
+    public int updateShowHeat(Long id) {
+        ShowHeat showHeat = showHeatDao.getHeatById(id);
+        //热度计算公式
+        int heat=showHeat.getClicks()+showHeat.getLikes()+showHeat.getComments()*2;
+        showHeat.setHeat(heat);
+        int i = showHeatDao.updateHeat(showHeat);
+        return i;
+    }
 
+    /**
+     * 关键字搜索
+     * @param key
+     * @return
+     */
+    @Override
+    public List<PerfectShow> getPerfectShowByKey(String key) {
+        List<PerfectShow> shows = showDao.getPerfectShowByKey(key);
+        return shows;
+    }
 }
