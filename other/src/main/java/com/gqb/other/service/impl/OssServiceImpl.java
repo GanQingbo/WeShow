@@ -31,6 +31,7 @@ public class OssServiceImpl implements OssService {
         String keySecret = OssProperties.KEY_SECRET;
         String bucketName = OssProperties.BUCKET_NAME;
         try {
+            System.out.println("=====File:"+file);
             //创建oss实例
             OSS ossClient = new OSSClientBuilder().build(endpoint, keyId, keySecret);
             //获取上传文件输入流

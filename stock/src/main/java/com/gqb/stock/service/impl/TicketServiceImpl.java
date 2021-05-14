@@ -354,6 +354,12 @@ public class TicketServiceImpl implements TicketService {
      * 1. 订单过期未支付
      * 2. 用户主动取消
      */
+    /**
+     * 库存自动解锁
+     * @param message
+     * @param ticketLockVo
+     * @param channel
+     */
     @RabbitListener(queues = "stock.release.queue")
     public void stockAutoLocket(Message message, TicketLockVo ticketLockVo, Channel channel) {
         log.info("Stock=====>收到订单关闭的消息");
@@ -364,14 +370,15 @@ public class TicketServiceImpl implements TicketService {
         Object data = r.getData().get("order");
         String json = JSONObject.toJSON(data).toString();
         Order order = JSON.parseObject(json, Order.class);
+        log.info("Stock=====>收到订单Id是:"+order.getId());
         try {
+            //状态0是未支付的订单
             if (order.getOrderStatus() == (byte) 0) {
-                //未支付的订单
                 //2.解锁库存，更新redis票数
                 int i = ticketUnLocket(ticketLockVo);
-                //3.修改订单状态为已关闭 2
+                //3.修改订单状态为已关闭 4
                 if (i > 0) {
-                    order.setOrderStatus((byte) 2);
+                    order.setOrderStatus((byte) 4);
                     //更新订单状态
                     R r1 = orderFeign.setOrderStatus(order);
                     if (r1.getSuccess() == true) {
@@ -388,6 +395,7 @@ public class TicketServiceImpl implements TicketService {
                 }
             }
             //不是待支付的订单也处理
+            log.info("=====订单处理消息确认");
             channel.basicAck(deliveryTag, false);
         }catch (Exception e){
             e.printStackTrace();
@@ -430,6 +438,48 @@ public class TicketServiceImpl implements TicketService {
                 Thread.sleep(300);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+        return i;
+    }
+
+    /**
+     * 归还库存
+     * @param ticketLockVo
+     * @return
+     */
+    @Override
+    public int ticketReturn(TicketLockVo ticketLockVo) {
+        int i = ticketDao.ticketReturn(ticketLockVo);
+        if(i>0){
+            //更新redis
+            String uuid = UUID.randomUUID().toString();
+            Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent("TicketStockLock", uuid, 60, TimeUnit.SECONDS);
+            Integer surplus = 0;
+            if (lock) {
+                //加锁成功
+                log.info("=====Ticket库存加锁，UUID：" + uuid);
+                try {
+                    String stockKey = "Ticket:" + "stock:" + ticketLockVo.getId();
+                    surplus = ticketDao.getSurplus(ticketLockVo.getId());
+                    log.info("=====Ticket更新库存缓存，从DB获取数量为：" + surplus);
+                    //放进Redis
+                    stringRedisTemplate.opsForValue().set(stockKey, surplus.toString());
+                } finally {
+                    //释放锁
+                    if (uuid.equals(stringRedisTemplate.opsForValue().get("TicketStockLock"))) {
+                        stringRedisTemplate.delete("TicketStockLock");
+                        log.info("=====Ticket库存解锁，UUID：" + uuid);
+                    }
+                }
+            } else {
+                //加锁失败，利用自旋机制重试
+                log.info("=====TicketStockLock获得锁失败，正在重试");
+                try {
+                    Thread.sleep(300);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         return i;

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.user.dao.IdentityDao">
+
+    <!--cloum是数据库建表的字段名 ,property是java实体类的属性名-->
+    <resultMap id="BaseResultMap" type="com.gqb.user.entity.Identity">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="user_id" property="userId" jdbcType="BIGINT"/>
+        <id column="number" property="number" jdbcType="VARCHAR"/>
+        <id column="name" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="CheckResultMap" type="com.gqb.user.entity.TicketSell">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="show_id" property="showId" jdbcType="BIGINT"/>
+        <id column="identity_number" property="identityNumber" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getIdentityByUser" parameterType="Long" resultMap="BaseResultMap">
+        select * from `identity` where user_id=#{id}
+    </select>
+
+    <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
+    <insert id="createIdentity" parameterType="com.gqb.user.entity.Identity" useGeneratedKeys="true" keyProperty="id">
+        insert into `identity`(user_id,number,name)
+            values(#{userId},#{number},#{name});
+    </insert>
+
+    <delete id="deleteIdentityById" parameterType="Long">
+        delete from `identity` where id =#{id};
+    </delete>
+
+    <select id="identityCheck" parameterType="Long" resultMap="CheckResultMap">
+        select * from ticket_sell where show_id = #{id}
+    </select>
+
+    <insert id="createTicketSell" parameterType="com.gqb.user.entity.TicketSell" useGeneratedKeys="true" keyProperty="id">
+        insert into `ticket_sell`(show_id,identity_number)
+            values(#{showId},#{identityNumber});
+    </insert>
+
+    <delete id="deleteTicketSell" parameterType="com.gqb.user.entity.TicketSell">
+        delete from ticket_sell where show_id=#{showId} and identity_number = #{identityNumber}
+    </delete>
+
+</mapper>

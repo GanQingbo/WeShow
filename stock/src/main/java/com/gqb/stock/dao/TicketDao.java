@@ -58,4 +58,6 @@ public interface TicketDao {
     int updateTicketLocked(TicketLockVo ticketLockVo);
 
     int updateTicketUnLocked(TicketLockVo ticketLockVo);
+
+    int ticketReturn(TicketLockVo ticketLockVo);
 }

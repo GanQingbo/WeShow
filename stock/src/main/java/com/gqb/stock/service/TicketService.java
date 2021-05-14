@@ -44,7 +44,9 @@ public interface TicketService {
 
     long getShowIdByTicketId(Long id);
 
-    int ticketLocket(TicketLockVo ticketLockVo)throws Exception;
+    int ticketLocket(TicketLockVo ticketLockVo) throws Exception;
 
     int ticketUnLocket(TicketLockVo ticketLockVo);
+
+    int ticketReturn(TicketLockVo ticketLockVo);
 }

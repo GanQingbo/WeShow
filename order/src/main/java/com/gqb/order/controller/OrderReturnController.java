@@ -20,9 +20,9 @@ public class OrderReturnController {
     @Resource
     OrderService orderService;
 
-    @PostMapping("/createOrderReturn")
-    public R createReturn(@RequestBody OrderReturn orderReturn){
-        int i = orderService.createOrderReturn(orderReturn);
+    @GetMapping("/createOrderReturn/{id}")
+    public R createReturn(@PathVariable("id") Long id){
+        int i = orderService.createOrderReturn(id);
         if(i>0){
             return R.ok();
         }

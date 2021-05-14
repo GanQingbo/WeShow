@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.gqb.common.utils.R;
 import com.gqb.order.client.StockClient;
+import com.gqb.order.client.UserFeign;
 import com.gqb.order.dao.OrderDao;
 import com.gqb.order.dao.OrderReturnDao;
 import com.gqb.order.entity.Order;
@@ -17,9 +18,7 @@ import com.gqb.order.entity.vo.TicketLockVo;
 import com.gqb.order.service.OrderService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -55,6 +54,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OrderReturnDao returnDao;
+
+    @Resource
+    private UserFeign userFeign;
 
     @Resource
     private RabbitTemplate rabbitTemplate;
@@ -340,15 +342,26 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 退票相关，创建一个退票申请
      *
-     * @param orderReturn
+     * @param id
      * @return
      */
     @Override
-    public int createOrderReturn(OrderReturn orderReturn) {
-        int orderReturn1 = returnDao.createOrderReturn(orderReturn);
+    public int createOrderReturn(Long id) {
+        //订单id
+        int orderReturn1 = returnDao.createOrderReturn(id);
+        //修改订单状态
+        Order order = new Order();
+        order.setId(id);
+        order.setOrderStatus((byte)2);
+        orderDao.setOrderStatus(order);
         return orderReturn1;
     }
 
+    /**
+     * 管理员处理退票，库存更新
+     * @param orderReturn
+     * @return
+     */
     @Override
     public int updateOrderReturn(OrderReturn orderReturn) {
         orderReturn.setAdminId(1001L);
@@ -357,7 +370,26 @@ public class OrderServiceImpl implements OrderService {
         if (order != null) {
             orderReturn.setReturnMoney(order.getOrderAmount());
         }
+        //更新订单状态
+        order.setOrderStatus((byte)3);
+        orderDao.setOrderStatus(order);
         int i = returnDao.updateOrderReturn(orderReturn);
+        if(i>0){
+            //还库存,计算票数num=amount / ticket-id-seat_price
+            BigDecimal price = stockClient.getPriceById(order.getTicketId());
+            BigDecimal amount = order.getOrderAmount();
+            int num=amount.intValue()/price.intValue();
+            log.info("=====远程调用归还库存");
+            TicketLockVo ticket=new TicketLockVo();
+            ticket.setId(order.getTicketId());
+            ticket.setNumber(num);
+            stockClient.ticketReturn(ticket);
+        }
+        //从售票记录中移除，order_id->show_id and user_id->number
+        R r = userFeign.returnTicket(order);
+        if(r.getSuccess()){
+            log.info("=====远程删除售票记录成功");
+        }
         return i;
     }
 
@@ -390,7 +422,7 @@ public class OrderServiceImpl implements OrderService {
         String orderToken = confirmVo.getToken();
         String redisToken = stringRedisTemplate.opsForValue().get("Order:Token:" + confirmVo.getUserId());
         log.info("=====RedisToken:" + redisToken);
-        //lua
+        //lua,存在表示是第一次操作，执行业务并把token删除，不存在返回0
         String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
        /* if(orderToken!=null && orderToken.equals(redisToken)){
             //验证通过
@@ -408,11 +440,12 @@ public class OrderServiceImpl implements OrderService {
             //2.创建订单
             long i = createOrderByConfirm();
             if(i>0){
-                log.info("=====订单生成成功，锁定库存");
+                log.info("=====订单生成成功，远程调用锁定库存");
                 TicketLockVo ticketLockVo=new TicketLockVo();
                 ticketLockVo.setId(confirmVo.getTicketId());
-                ticketLockVo.setNumber(confirmVo.getNumber());
-                ticketLockVo.setOrderId(i);
+                ticketLockVo.setNumber(confirmVo.getNumber()); //锁的数量
+                Order order = orderThreadLocal.get();
+                ticketLockVo.setOrderId(order.getId()); //锁的订单id
                 //3.远程调用锁库存，消息队列自动解锁
                 R r = stockClient.ticketLocked(ticketLockVo);
                 if(r.getSuccess()==true){
@@ -432,6 +465,10 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * 创建订单
+     * @return
+     */
     @Transactional
     public Long createOrderByConfirm(){
         ConfirmVo confirmVo=confirmVoThreadLocal.get();
@@ -442,15 +479,17 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderSn(orderSn.toString());
         log.info("=====订单号：" + orderSn);
         order.setUserId(confirmVo.getUserId());
+        //获取演出id
         R showIdByTicketId = stockClient.getShowIdByTicketId(confirmVo.getTicketId());
         Object showId = showIdByTicketId.getData().get("showId");
         Long longShowId=Long.valueOf(showId.toString());
-        log.info("=====演出号：" + longShowId);
+        log.info("=====演出Id：" + longShowId);
         order.setShowId(longShowId);
-        log.info("=====售票号：" + confirmVo.getTicketId());
+        log.info("=====售票Id：" + confirmVo.getTicketId());
         order.setTicketId(confirmVo.getTicketId());
         order.setOrderAmount(confirmVo.getAmount());
         int isSuccess = orderDao.createOrder(order);
+        log.info("=====新创建的订单Id："+order.getId());
         if(isSuccess>0){
             orderThreadLocal.set(order);
             return orderSn;
@@ -481,7 +520,7 @@ public class OrderServiceImpl implements OrderService {
     public int orderPaySuccess(TicketLockVo ticketLockVo) {
         Order order=new Order();
         order.setId(ticketLockVo.getOrderId());
-        //更新订单支付状态
+        //更新订单支付状态===怎么判断支付成功呢？支付宝要公网网址才可以跳转成功
         order.setOrderStatus((byte)1);
         //支付时间
         Date date=new Date();
@@ -528,6 +567,19 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderVo> getOrderVoByUserId(Long id) {
         List<OrderVo> orderVoByUserId = orderDao.getOrderVoByUserId(id);
+        log.info("=====订单查询成功");
+        for(OrderVo orderVo:orderVoByUserId){
+            log.info("=====订单sn："+orderVo.getOrderSn());
+            Date date=new Date();
+            if(orderVo.getShowTime().getTime()> date.getTime()){
+                //0未上映,1已上映
+                orderVo.setShowStatus((byte)0);
+                log.info("=====订单演出未上映");
+            }else {
+                orderVo.setShowStatus((byte)1);
+            }
+            //订单状态,0待支付，1已支付，2退票中，3退票完成
+        }
         return orderVoByUserId;
     }
 
@@ -565,7 +617,14 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public OrderVo getOrderVoByOrderId(Long id) {
-        OrderVo orderVoByOrderId = orderDao.getOrderVoByOrderId(id);
-        return orderVoByOrderId;
+        OrderVo orderVo = orderDao.getOrderVoByOrderId(id);
+        Date date=new Date();
+        if(orderVo.getShowTime().getTime()> date.getTime()){
+            //0未上映,1已上映
+            orderVo.setShowStatus((byte)0);
+        }else {
+            orderVo.setShowStatus((byte)1);
+        }
+        return orderVo;
     }
 }

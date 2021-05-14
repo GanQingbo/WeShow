@@ -58,14 +58,8 @@
     <update id="updateUser" parameterType="com.gqb.user.entity.User">
         update `user`
         <set>
-            <if test="username!=null">
-                username=#{username},
-            </if>
             <if test="nickname!=null">
                 nickname=#{nickname},
-            </if>
-            <if test="mobile!=null">
-                mobile=#{mobile},
             </if>
             <if test="header!=null">
                 header=#{header},

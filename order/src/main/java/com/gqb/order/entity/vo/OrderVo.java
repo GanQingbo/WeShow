@@ -22,11 +22,20 @@ public class OrderVo implements Serializable {
     private String showPoster;
     private String seatType;
     private BigDecimal orderAmount;
+    private Byte showStatus;
     private Byte orderStatus;
     private Byte deleteStatus;
     private Date createTime;
     private Date updateTime;
     private Date paymentTime;
+
+    public Byte getShowStatus() {
+        return showStatus;
+    }
+
+    public void setShowStatus(Byte showStatus) {
+        this.showStatus = showStatus;
+    }
 
     public String getOrderSn() {
         return orderSn;
@@ -151,7 +160,7 @@ public class OrderVo implements Serializable {
     public OrderVo() {
     }
 
-    public OrderVo(Long id, Long userId, Long showId, Long ticketId, String orderSn, String showName, Date showTime, String showPoster, String seatType, BigDecimal orderAmount, Byte orderStatus, Byte deleteStatus, Date createTime, Date updateTime, Date paymentTime) {
+    public OrderVo(Long id, Long userId, Long showId, Long ticketId, String orderSn, String showName, Date showTime, String showPoster, String seatType, BigDecimal orderAmount, Byte showStatus, Byte orderStatus, Byte deleteStatus, Date createTime, Date updateTime, Date paymentTime) {
         this.id = id;
         this.userId = userId;
         this.showId = showId;
@@ -162,11 +171,11 @@ public class OrderVo implements Serializable {
         this.showPoster = showPoster;
         this.seatType = seatType;
         this.orderAmount = orderAmount;
+        this.showStatus = showStatus;
         this.orderStatus = orderStatus;
         this.deleteStatus = deleteStatus;
         this.createTime = createTime;
         this.updateTime = updateTime;
         this.paymentTime = paymentTime;
     }
-
 }

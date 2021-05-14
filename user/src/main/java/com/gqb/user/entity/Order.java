@@ -1,4 +1,4 @@
-package com.gqb.order.entity;
+package com.gqb.user.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -41,7 +41,7 @@ public class Order implements Serializable {
      */
     private BigDecimal orderAmount;
     /**
-     * 订单状态,0待支付，1已支付，2退票中，3退票完成，4订单已关闭
+     * 订单状态,0待支付，1已支付，3退票中，4退票完成
      */
     private Byte orderStatus;
     /**

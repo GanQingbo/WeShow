@@ -15,7 +15,7 @@
 
     <!--useGeneratedKeys和keyProperty获取数据库自动生成的id，只对insert有效-->
     <insert id="createOrderReturn" parameterType="com.gqb.order.entity.OrderReturn" useGeneratedKeys="true" keyProperty="id">
-        insert into order_return(order_id) values(#{orderId});
+        insert into order_return(order_id) values(#{id});
     </insert>
 
     <select id="getOrderReturnQuery" parameterType="com.gqb.order.entity.OrderReturn" resultMap="BaseResultMap">
@@ -34,7 +34,7 @@
         <if test="returnStatus!=null">
             AND return_status = #{returnStatus}
         </if>
-        order by create_time
+        order by create_time DESC
     </select>
 
 

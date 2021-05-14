@@ -87,7 +87,8 @@ public class OrderController {
         return R.error().message("删除订单失败");
     }
 
-    @PostMapping("/updateDeleteStatus/{id}")
+    //用户删除订单
+    @GetMapping("/updateDeleteStatus/{id}")
     public R updateDeleteStatus(@PathVariable("id") Long id) {
         //逻辑删除
         int i = orderService.updateOrderDeleteStatus(id);
@@ -180,6 +181,7 @@ public class OrderController {
         return R.ok().data("order",orderVoByUserId);
     }
 
+    //根据订单id获取具体信息
     @GetMapping("/getOrderVoByOrderId/{id}")
     public R getOrderByOrderId(@PathVariable("id") Long id){
         OrderVo order = orderService.getOrderVoByOrderId(id);

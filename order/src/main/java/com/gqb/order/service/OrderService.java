@@ -31,7 +31,7 @@ public interface OrderService {
     int sendCreateRequest(Order order);
 
     //提交申请退票
-    int createOrderReturn(OrderReturn orderReturn);
+    int createOrderReturn(Long id);
     //处理退票
     int updateOrderReturn(OrderReturn orderReturn);
     //查看退票list

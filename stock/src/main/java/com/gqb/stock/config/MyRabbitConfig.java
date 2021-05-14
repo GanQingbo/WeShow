@@ -45,10 +45,15 @@ public class MyRabbitConfig {
         Map<String,Object> args=new HashMap<>();
         args.put("x-dead-letter-exchange","stock-event-exchange");
         args.put("x-dead-letter-routing-key","stock.release");
+        //单位是毫秒
         args.put("x-message-ttl",60000);
         return new Queue("stock.delay.queue",true,false,false,args);
     }
 
+    /**
+     * 从release取出消息
+     * @return
+     */
     @Bean
     public Binding stockReleaseBinding(){
         Binding binding = new Binding("stock.release.queue", Binding.DestinationType.QUEUE, "stock-event-exchange", "stock.release.#", null);
@@ -56,7 +61,7 @@ public class MyRabbitConfig {
     }
 
     /**
-     * 消息发送到这个队列里去
+     * 消息发送到delay里去
      * @return
      */
     @Bean

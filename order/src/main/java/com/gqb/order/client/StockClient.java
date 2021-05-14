@@ -1,6 +1,7 @@
 package com.gqb.order.client;
 
 import com.gqb.common.utils.R;
+import com.gqb.order.entity.Order;
 import com.gqb.order.entity.vo.TicketLockVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -46,4 +47,9 @@ public interface StockClient {
 
     @PostMapping("/ticket/ticketUnlocking")
     R ticketUnlocking(@RequestBody TicketLockVo ticketLockVo);
+
+    @PostMapping("/ticket/ticketReturn")
+    R ticketReturn(@RequestBody TicketLockVo ticketLockVo);
+
+
 }

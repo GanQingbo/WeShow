@@ -176,4 +176,13 @@ public class TicketController {
         }
         return R.error().message("库存扣减出错");
     }
+
+    @PostMapping("/ticketReturn")
+    public R ticketReturn(@RequestBody TicketLockVo ticketLockVo){
+        int i = ticketService.ticketReturn(ticketLockVo);
+        if(i>0){
+            return R.ok();
+        }
+        return R.error();
+    }
 }

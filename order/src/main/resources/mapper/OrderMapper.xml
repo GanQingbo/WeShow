@@ -88,17 +88,18 @@
         and o.user_id=user_id
         and o.show_id=s.id
         and o.ticket_id=ticket.id
+        and o.delete_status=0
     </select>
 
     <select id="getOrderVoByOrderId" parameterType="Long" resultMap="OrderVoResultMap">
-    select o.id,o.user_id,o.show_id,o.ticket_id,o.order_sn,s.show_name,
-    s.show_time,s.show_poster,ticket.seat_type,o.order_amount,o.order_status,
-    o.delete_status,o.create_time,o.update_time,o.payment_time
-    from show_list as s,ticket,order_list as o
-    where o.id=#{id}
-    and o.user_id=user_id
-    and o.show_id=s.id
-    and o.ticket_id=ticket.id
+        select o.id,o.user_id,o.show_id,o.ticket_id,o.order_sn,s.show_name,
+        s.show_time,s.show_poster,ticket.seat_type,o.order_amount,o.order_status,
+        o.delete_status,o.create_time,o.update_time,o.payment_time
+        from show_list as s,ticket,order_list as o
+        where o.id=#{id}
+        and o.user_id=user_id
+        and o.show_id=s.id
+        and o.ticket_id=ticket.id
     </select>
 
     <select id="getOrderByUserId" parameterType="Long" resultMap="BaseResultMap">
